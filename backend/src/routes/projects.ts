@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify'
-import { authenticate, authorize } from '@/middleware/auth'
+import type { FastifyInstance } from 'fastify'
+import { authenticate, authorize, type AuthenticatedRequest } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
 import { validationMiddleware } from '@/middleware/validation'
 import { z } from 'zod'

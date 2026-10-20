@@ -193,7 +193,8 @@ export default async function profileRoutes(fastify: FastifyInstance) {
       ],
     },
     async (request, reply) => {
-      const userId = (request as any).user?.id
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
       const body = request.body as z.infer<typeof FreelancerProfileUpdateSchema>
       const user = await prisma.user.findUnique({
         where: { id: userId },
