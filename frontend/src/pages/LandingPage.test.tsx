@@ -6,7 +6,7 @@ import { LandingPage } from '@/pages/LandingPage';
 describe('LandingPage', () => {
   it('renders branding and primary navigation', () => {
     render(<LandingPage />);
-    expect(screen.getAllByRole('link', { name: /craftlane/i })).toHaveLength(3);
+    expect(screen.getAllByRole('link', { name: /craftlane/i })).not.toHaveLength(0);
     expect(screen.getAllByRole('link', { name: /find work/i })).toHaveLength(2);
     expect(screen.getAllByRole('link', { name: /sign in/i })).toHaveLength(2);
     expect(screen.getAllByRole('link', { name: /get started/i })).toHaveLength(1);

@@ -75,7 +75,7 @@ describe('SignUpPage', () => {
     fireEvent.change(password, { target: { value: 'password123' } });
     fireEvent.change(confirm, { target: { value: 'password123' } });
     fireEvent.click(screen.getByRole('checkbox', { name: /agree to the/i }));
-    fireEvent.submit(screen.getByRole('form'));
+    fireEvent.click(submit);
 
     await waitFor(() => {
       expect(mockedSignup).toHaveBeenCalledTimes(1);
@@ -99,7 +99,7 @@ describe('SignUpPage', () => {
     fireEvent.change(password, { target: { value: 'password123' } });
     fireEvent.change(confirm, { target: { value: 'password123' } });
     fireEvent.click(screen.getByRole('checkbox', { name: /agree to the/i }));
-    fireEvent.submit(screen.getByRole('form'));
+    fireEvent.click(submit);
 
     await waitFor(() => {
       expect(screen.getByText(/email already in use/i)).toBeInTheDocument();
