@@ -3,19 +3,15 @@
  * The AuthProvider manages session state across the application.
  */
 
-import type { ReactNode } from 'react'
-import { AuthProvider } from '@/features/auth/auth-context'
+import type { ReactNode } from 'react';
+import { AuthProvider } from '@/features/auth/auth-context';
 
 interface ProvidersProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps): ReactNode {
-  return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
-  )
+  return <AuthProvider>{children}</AuthProvider>;
 }
 
-export default Providers
+export default Providers;

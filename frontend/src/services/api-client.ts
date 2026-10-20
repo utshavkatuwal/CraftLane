@@ -43,12 +43,7 @@ export class ApiErrorResponse extends Error {
   public readonly code: string | undefined;
   public readonly details: Record<string, string[]> | undefined;
 
-  constructor(
-    message: string,
-    status: number,
-    code?: string,
-    details?: Record<string, string[]>,
-  ) {
+  constructor(message: string, status: number, code?: string, details?: Record<string, string[]>) {
     super(message);
     this.name = 'ApiErrorResponse';
     this.status = status;
@@ -94,10 +89,7 @@ async function parseErrorResponse(response: Response): Promise<ApiError> {
 
 /* Typed JSON request. Throws ApiErrorResponse on non-ok responses so
  * callers decide how to surface failures (error UI, empty state, etc.). */
-export async function apiRequest<T>(
-  path: string,
-  init: RequestInitExtend = {},
-): Promise<T> {
+export async function apiRequest<T>(path: string, init: RequestInitExtend = {}): Promise<T> {
   const baseUrl = getBaseUrl();
   const url = path.startsWith('http') ? path : `${baseUrl}${path}`;
 
