@@ -71,6 +71,7 @@ env/
 # Local database dumps and sensitive dev artifacts
 *.dump
 *.sql
+!backend/prisma/migrations/**/*.sql
 backups/
 
 # Misc
