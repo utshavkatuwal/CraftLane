@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
 /* Craftlane — Test database setup
  *
@@ -14,15 +14,15 @@ import { PrismaClient } from '@prisma/client'
  *   5. Run: npm test
  */
 
-let prismaInstance: PrismaClient | null = null
-let databaseAvailable = false
+let prismaInstance: PrismaClient | null = null;
+let databaseAvailable = false;
 
 export async function getPrisma(): Promise<PrismaClient> {
   if (!prismaInstance) {
-    const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL
+    const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL;
     if (!databaseUrl) {
-      databaseAvailable = false
-      throw new Error('No DATABASE_URL or TEST_DATABASE_URL set')
+      databaseAvailable = false;
+      throw new Error('No DATABASE_URL or TEST_DATABASE_URL set');
     }
     prismaInstance = new PrismaClient({
       datasources: {
@@ -30,46 +30,44 @@ export async function getPrisma(): Promise<PrismaClient> {
           url: databaseUrl,
         },
       },
-    })
+    });
     try {
-      await prismaInstance.$connect()
-      await prismaInstance.$queryRaw`SELECT 1`
-      databaseAvailable = true
+      await prismaInstance.$connect();
+      await prismaInstance.$queryRaw`SELECT 1`;
+      databaseAvailable = true;
     } catch {
-      databaseAvailable = false
-      prismaInstance = null
+      databaseAvailable = false;
+      prismaInstance = null;
     }
   }
   if (!prismaInstance) {
-    throw new Error('Database connection failed')
+    throw new Error('Database connection failed');
   }
-  return prismaInstance
+  return prismaInstance;
 }
 
 export async function setupDatabase(): Promise<void> {
-  const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL
+  const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL;
   if (!databaseUrl) {
     console.warn(
-      'WARNING: No DATABASE_URL or TEST_DATABASE_URL set. Database tests will be skipped.',
-    )
-    return
+      'WARNING: No DATABASE_URL or TEST_DATABASE_URL set. Database tests will be skipped.'
+    );
+    return;
   }
 
   try {
-    await getPrisma()
+    await getPrisma();
   } catch (err) {
-    console.warn(
-      'WARNING: Cannot connect to test database. Database tests will be skipped.',
-    )
-    console.warn(String(err))
+    console.warn('WARNING: Cannot connect to test database. Database tests will be skipped.');
+    console.warn(String(err));
   }
 }
 
 export async function teardownDatabase(): Promise<void> {
   if (prismaInstance) {
-    await prismaInstance.$disconnect()
-    prismaInstance = null
+    await prismaInstance.$disconnect();
+    prismaInstance = null;
   }
 }
 
-export { databaseAvailable }
+export { databaseAvailable };
