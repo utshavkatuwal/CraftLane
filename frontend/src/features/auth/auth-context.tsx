@@ -20,8 +20,6 @@ import {
   signup as signupService,
   getMe as getMeService,
   signout as signoutService,
-  SignupSchema,
-  SigninSchema,
 } from '@/features/auth/auth.service'
 import type { SignUpForm, SignInForm, User } from '@/types'
 
@@ -45,7 +43,7 @@ export function useAuth(): AuthContextType {
   return context
 }
 
-export function AuthProvider({ children }: { children: ReactNode }): JSX.Element {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
