@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify'
-import { authenticate, authorize } from '@/middleware/auth'
+import type { FastifyInstance } from 'fastify'
+import { authenticate, type AuthenticatedRequest } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
 import { validationMiddleware } from '@/middleware/validation'
 import { z } from 'zod'
@@ -23,13 +23,6 @@ const FreelancerProfileUpdateSchema = z.object({
   skills: z.array(z.string()).optional(),
 })
 
-const ClientProfileUpdateSchema = z.object({
-  organization: z.string().max(255).optional().nullable(),
-  bio: z.string().optional().nullable(),
-  location: z.string().max(255).optional().nullable(),
-  is_public: z.boolean().optional(),
-})
-
 const ProfileIdSchema = z.object({
   id: z.string().uuid(),
 })
@@ -40,7 +33,8 @@ export default async function profileRoutes(fastify: FastifyInstance) {
     '/me',
     { preHandler: [authenticate] },
     async (request, reply) => {
-      const userId = (request as any).user?.id
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
 
       const user = await prisma.user.findUnique({
         where: { id: userId },
