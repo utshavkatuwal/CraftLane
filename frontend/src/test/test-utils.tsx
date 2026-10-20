@@ -4,6 +4,7 @@
 import type { RenderOptions } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { ReactElement } from 'react';
+import type { ComponentType } from 'react';
 
 import { render as rtlRender, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AuthProvider } from '@/features/auth/auth-context';
@@ -15,7 +16,7 @@ const customRender = (
   return rtlRender(
     ui,
     {
-      wrapper: (Component) => (
+      wrapper: (Component: ComponentType) => (
         <MemoryRouter>
           <AuthProvider>
             <Component />
