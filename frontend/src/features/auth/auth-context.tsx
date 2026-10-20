@@ -36,7 +36,6 @@ export function useAuth(): AuthContextType {
   return context;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
