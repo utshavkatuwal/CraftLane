@@ -68,7 +68,7 @@ export async function signup(data: z.infer<typeof SignupSchema>) {
       email: data.email.toLowerCase().trim(),
       password_hash: passwordHash,
       full_name: data.full_name.trim(),
-      role: data.role || 'CLIENT',
+      role: 'CLIENT',
       status: 'PENDING',
     },
     select: {

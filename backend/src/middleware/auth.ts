@@ -34,14 +34,15 @@ function tokenPrefix(token: string): string {
 export const authenticate: (
   request: AuthenticatedRequest,
   reply: FastifyReply,
-) => Promise<void> = async (request, reply) => {
+) => Promise<void | undefined> = async (request, reply) => {
   const authHeader = request.headers.authorization
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return reply.status(401).send({
+    await reply.status(401).send({
       error: 'unauthenticated',
       message: 'Authentication required',
     })
+    return
   }
 
   const token = authHeader.slice('Bearer '.length)
@@ -54,25 +55,28 @@ export const authenticate: (
     })
 
     if (!session) {
-      return reply.status(401).send({
+      await reply.status(401).send({
         error: 'unauthenticated',
         message: 'Session not found',
       })
+      return
     }
 
     if (new Date(session.expires_at) < new Date()) {
-      return reply.status(401).send({
+      await reply.status(401).send({
         error: 'unauthenticated',
         message: 'Session expired',
       })
+      return
     }
 
     const valid = await verifyTokenHash(token, session.token_hash)
     if (!valid) {
-      return reply.status(401).send({
+      await reply.status(401).send({
         error: 'unauthenticated',
         message: 'Invalid session token',
       })
+      return
     }
 
     // Refresh last_used_at
@@ -93,7 +97,7 @@ export const authenticate: (
       expires_at: session.expires_at,
     }
   } catch {
-    return reply.status(401).send({
+    await reply.status(401).send({
       error: 'unauthenticated',
       message: 'Authentication failed',
     })
@@ -105,16 +109,18 @@ export const authenticate: (
 export function authorize(allowedRoles: string[]) {
   return (request: AuthenticatedRequest, reply: FastifyReply) => {
     if (!request.user) {
-      return reply.status(401).send({
+      reply.status(401).send({
         error: 'unauthenticated',
         message: 'Authentication required',
       })
+      return
     }
     if (!allowedRoles.includes(request.user.role)) {
-      return reply.status(403).send({
+      reply.status(403).send({
         error: 'forbidden',
         message: 'Insufficient permissions',
       })
+      return
     }
   }
 }

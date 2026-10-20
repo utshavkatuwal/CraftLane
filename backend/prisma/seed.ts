@@ -98,13 +98,7 @@ async function main() {
   // Link skills to freelancer profile
   for (const skill of skills.slice(0, 3)) {
     await prisma.profileSkill.create({
-      where: {
-        profile_id_skill_id: {
-          profile_id: freelancerProfile.id,
-          skill_id: skill.id,
-        },
-      },
-      create: {
+      data: {
         profile_id: freelancerProfile.id,
         skill_id: skill.id,
       },
@@ -139,8 +133,8 @@ async function main() {
       currency: 'EUR',
       skills: {
         create: [
-          { skill_id: skills[0].id }, // Web Design
-          { skill_id: skills[1].id }, // React Development
+          { skill_id: skills[0]!.id }, // Web Design
+          { skill_id: skills[1]!.id }, // React Development
         ],
       },
     },
