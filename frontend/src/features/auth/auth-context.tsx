@@ -67,9 +67,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = async (data: SignInForm): Promise<void> => {
-    const result = await signinService(data)
-    setAuthToken(result.session_token)
-    setUser(result.user)
+    const { session_token, user } = await signinService(data)
+    setAuthToken(session_token)
+    setUser(user)
   }
 
   const signup = async (data: SignUpForm): Promise<void> => {

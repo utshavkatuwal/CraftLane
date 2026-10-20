@@ -158,5 +158,5 @@ export const api = {
     apiRequest<T>(path, { ...init, method: 'DELETE' }),
 };
 
-export { getBaseUrl, setAuthToken, getAuthToken };
+export { getBaseUrl };
 export type { RequestInitExtend };
