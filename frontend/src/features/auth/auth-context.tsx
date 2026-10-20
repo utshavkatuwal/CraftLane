@@ -73,10 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signup = async (data: SignUpForm): Promise<void> => {
-    const result = await signupService(data)
+    const user = await signupService(data)
     // Signup does not return a session token — the user must sign in.
-    // Return the created user so the caller can show a success message.
-    setUser(result.user)
+    setUser(user)
   }
 
   const logout = async (): Promise<void> => {
