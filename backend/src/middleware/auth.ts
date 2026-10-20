@@ -1,5 +1,4 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
-import { hash } from 'argon2'
 import { prisma } from '@/lib/prisma'
 
 /* Craftlane — Authentication middleware

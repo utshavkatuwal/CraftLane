@@ -3,7 +3,7 @@ import type {
   FastifyReply,
   HookHandlerDoneFunction,
 } from 'fastify'
-import { ZodSchema, ZodError } from 'zod'
+import type { ZodSchema, ZodError } from 'zod'
 
 /* Craftlane — Zod validation middleware
  *

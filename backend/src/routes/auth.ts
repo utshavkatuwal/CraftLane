@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify'
-import { authenticate } from '@/middleware/auth'
+import type { FastifyInstance } from 'fastify'
+import { authenticate, type AuthenticatedRequest } from '@/middleware/auth'
 import {
   signup as signupService,
   signin as signinService,
@@ -38,9 +38,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
       try {
         const result = await signupService(request.body as z.infer<typeof SignupSchema>)
         return reply.status(201).send(result)
-      } catch (err: any) {
-        if (err.statusCode === 409) {
-          return reply.status(409).send({ error: 'conflict', message: err.message })
+      } catch (err) {
+        const e = err as Error & { statusCode?: number }
+        if (e.statusCode === 409) {
+          return reply.status(409).send({ error: 'conflict', message: e.message })
         }
         throw err
       }
@@ -56,11 +57,12 @@ export default async function authRoutes(fastify: FastifyInstance) {
       try {
         const result = await signinService(request.body as z.infer<typeof SigninSchema>)
         return reply.status(200).send(result)
-      } catch (err: any) {
-        if (err.statusCode === 401 || err.statusCode === 403) {
+      } catch (err) {
+        const e = err as Error & { statusCode?: number }
+        if (e.statusCode === 401 || e.statusCode === 403) {
           return reply
-            .status(err.statusCode)
-            .send({ error: 'auth_failed', message: err.message })
+            .status(e.statusCode)
+            .send({ error: 'auth_failed', message: e.message })
         }
         throw err
       }
@@ -71,7 +73,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
     '/signout',
     { preHandler: [authenticate] },
     async (request, reply) => {
-      const session = (request as any).session
+      const req = request as AuthenticatedRequest
+      const session = req.session
       if (session) {
         await signoutService(session.id)
       }
@@ -83,7 +86,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
     '/me',
     { preHandler: [authenticate] },
     async (request, reply) => {
-      const userId = (request as any).user?.id
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
       const result = await getMeService(userId)
       return reply.status(200).send(result)
     },
