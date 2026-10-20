@@ -4,23 +4,24 @@
  * created. Success and failure are both reported honestly.
  */
 
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import { useForm, type UseFormRegister } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { FormField } from '@/components/ui/FormField';
-import { ErrorMessage } from '@/components/ui/ErrorMessage';
-import { Link as AppLink } from '@/components/ui/Link';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Page } from '@/components/layout/Page';
-import { signup, toAuthError } from './auth.service';
-import type { SignUpForm } from '@/types';
-import styles from './SignUpPage.module.css';
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
+import { useForm, type UseFormRegister } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { FormField } from '@/components/ui/FormField'
+import { ErrorMessage } from '@/components/ui/ErrorMessage'
+import { Link as AppLink } from '@/components/ui/Link'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+import { Page } from '@/components/layout/Page'
+import { useAuth } from '@/features/auth/auth-context'
+import { toAuthError } from '@/features/auth/auth.service'
+import type { SignUpForm } from '@/types'
+import styles from './SignUpPage.module.css'
 
 const schema = z
   .object({
@@ -38,12 +39,13 @@ const schema = z
   .refine((data) => data.password === data.password_confirm, {
     path: ['password_confirm'],
     message: 'Passwords do not match.',
-  });
+  })
 
 export function SignUpPage() {
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const navigate = useNavigate()
+  const { signup } = useAuth()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const {
     register,
@@ -58,22 +60,22 @@ export function SignUpPage() {
       password_confirm: '',
       terms: false,
     },
-  });
+  })
 
   const onSubmit = async (data: SignUpForm) => {
-    setIsSubmitting(true);
-    setServerError(null);
+    setIsSubmitting(true)
+    setServerError(null)
     try {
-      await signup(data);
-      // A real backend would issue a session here. Phase 1 does not manage
-      // tokens, so we do not fabricate a signed-in state. Navigate honestly.
-      navigate('/sign-in', { state: { email: data.email } });
+      await signup(data)
+      // Signup creates the account but does not start a session. Navigate to
+      // sign in so the user can authenticate.
+      navigate('/sign-in', { state: { email: data.email } })
     } catch (error) {
-      setServerError(toAuthError(error).message);
+      setServerError(toAuthError(error).message)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className={styles.page}>
@@ -179,18 +181,18 @@ export function SignUpPage() {
       </main>
       <Footer />
     </div>
-  );
+  )
 }
 
 interface PasswordInputProps {
-  register: UseFormRegister<SignUpForm>;
-  field: 'password' | 'password_confirm';
-  placeholder?: string;
-  autoComplete?: string;
+  register: UseFormRegister<SignUpForm>
+  field: 'password' | 'password_confirm'
+  placeholder?: string
+  autoComplete?: string
 }
 
 function PasswordInput({ register, field, placeholder, autoComplete }: PasswordInputProps) {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false)
 
   return (
     <div className={styles.passwordWrapper}>
@@ -209,7 +211,7 @@ function PasswordInput({ register, field, placeholder, autoComplete }: PasswordI
         {show ? <EyeOff className={styles.icon} /> : <Eye className={styles.icon} />}
       </button>
     </div>
-  );
+  )
 }
 
-SignUpPage.displayName = 'SignUpPage';
+SignUpPage.displayName = 'SignUpPage'

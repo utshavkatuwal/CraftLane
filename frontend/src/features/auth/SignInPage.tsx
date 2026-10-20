@@ -4,33 +4,35 @@
  * reported honestly.
  */
 
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { FormField } from '@/components/ui/FormField';
-import { ErrorMessage } from '@/components/ui/ErrorMessage';
-import { Link as AppLink } from '@/components/ui/Link';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
-import { Page } from '@/components/layout/Page';
-import { signin, toAuthError } from './auth.service';
-import type { SignInForm } from '@/types';
-import styles from './SignInPage.module.css';
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Eye } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { FormField } from '@/components/ui/FormField'
+import { ErrorMessage } from '@/components/ui/ErrorMessage'
+import { Link as AppLink } from '@/components/ui/Link'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+import { Page } from '@/components/layout/Page'
+import { useAuth } from '@/features/auth/auth-context'
+import { toAuthError } from '@/features/auth/auth.service'
+import type { SignInForm } from '@/types'
+import styles from './SignInPage.module.css'
 
 const schema = z.object({
   email: z.string().email('Please enter a valid email address.'),
   password: z.string().min(1, 'Please enter your password.'),
-});
+})
 
 export function SignInPage() {
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const navigate = useNavigate()
+  const { login } = useAuth()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const {
     register,
@@ -39,23 +41,20 @@ export function SignInPage() {
   } = useForm<SignInForm>({
     resolver: zodResolver(schema),
     defaultValues: { email: '', password: '' },
-  });
+  })
 
   const onSubmit = async (data: SignInForm) => {
-    setIsSubmitting(true);
-    setServerError(null);
+    setIsSubmitting(true)
+    setServerError(null)
     try {
-      await signin(data);
-      // Phase 1 does not manage tokens or sessions, so we do not fabricate a
-      // signed-in state. Navigate to the inbox/dashboard honestly once a
-      // backend contract exists.
-      navigate('/work');
+      await login(data)
+      navigate('/work')
     } catch (error) {
-      setServerError(toAuthError(error).message);
+      setServerError(toAuthError(error).message)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className={styles.page}>
@@ -127,7 +126,7 @@ export function SignInPage() {
       </main>
       <Footer />
     </div>
-  );
+  )
 }
 
-SignInPage.displayName = 'SignInPage';
+SignInPage.displayName = 'SignInPage'
