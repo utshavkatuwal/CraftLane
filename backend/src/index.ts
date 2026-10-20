@@ -1,4 +1,5 @@
 import fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
 import { prisma } from '@/lib/prisma';
 import authRoutes from '@/routes/auth';
 import projectRoutes from '@/routes/projects';
@@ -24,6 +25,15 @@ export function buildApp() {
     logger: process.env.NODE_ENV === 'development',
     requestTimeout: 30000,
     keepAliveTimeout: 5000,
+  });
+
+  // CORS — allow the frontend origin only
+  const frontendOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
+  app.register(fastifyCors, {
+    origin: frontendOrigin,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['content-type', 'authorization'],
   });
 
   // Health routes (no auth required)
