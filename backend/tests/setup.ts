@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
 /* Craftlane — Test database setup
  *
@@ -20,28 +20,26 @@ export const prisma = new PrismaClient({
       url: process.env.TEST_DATABASE_URL || process.env.DATABASE_URL,
     },
   },
-})
+});
 
 export async function setupDatabase() {
-  const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL
+  const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL;
   if (!databaseUrl) {
     console.warn(
-      'WARNING: No DATABASE_URL or TEST_DATABASE_URL set. Database tests will be skipped.',
-    )
-    return
+      'WARNING: No DATABASE_URL or TEST_DATABASE_URL set. Database tests will be skipped.'
+    );
+    return;
   }
 
   try {
-    await prisma.$connect()
-    await prisma.$queryRaw`SELECT 1`
+    await prisma.$connect();
+    await prisma.$queryRaw`SELECT 1`;
   } catch (err) {
-    console.warn(
-      'WARNING: Cannot connect to test database. Database tests will be skipped.',
-    )
-    console.warn(String(err))
+    console.warn('WARNING: Cannot connect to test database. Database tests will be skipped.');
+    console.warn(String(err));
   }
 }
 
 export async function teardownDatabase() {
-  await prisma.$disconnect()
+  await prisma.$disconnect();
 }

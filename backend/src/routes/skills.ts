@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
-import { prisma } from '@/lib/prisma'
+import type { FastifyInstance } from 'fastify';
+import { prisma } from '@/lib/prisma';
 
 /* Craftlane — Skills route
  *
@@ -11,7 +11,7 @@ export default async function skillRoutes(fastify: FastifyInstance) {
     const skills = await prisma.skill.findMany({
       orderBy: { name: 'asc' },
       select: { id: true, name: true, slug: true },
-    })
-    return reply.status(200).send(skills)
-  })
+    });
+    return reply.status(200).send(skills);
+  });
 }

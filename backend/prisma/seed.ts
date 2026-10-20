@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client'
-import { hash } from 'argon2'
+import { PrismaClient } from '@prisma/client';
+import { hash } from 'argon2';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 /* Craftlane — Development seed data
  *
@@ -12,28 +12,30 @@ const prisma = new PrismaClient()
  */
 
 async function main() {
-  console.log('Seeding development database...')
+  console.log('Seeding development database...');
 
   // Create skills
-  const skills = await Promise.all([
-    'Web Design',
-    'React Development',
-    'Copywriting',
-    'Digital Marketing',
-    'UI/UX Design',
-    'Python Development',
-  ].map((name) =>
-    prisma.skill.upsert({
-      where: { name },
-      update: {},
-      create: { name, slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-') },
-    }),
-  ))
+  const skills = await Promise.all(
+    [
+      'Web Design',
+      'React Development',
+      'Copywriting',
+      'Digital Marketing',
+      'UI/UX Design',
+      'Python Development',
+    ].map((name) =>
+      prisma.skill.upsert({
+        where: { name },
+        update: {},
+        create: { name, slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-') },
+      })
+    )
+  );
 
-  console.log(`Created ${skills.length} skills`)
+  console.log(`Created ${skills.length} skills`);
 
   // Create a freelancer user
-  const freelancerPassword = await hash('dev-freelancer-password')
+  const freelancerPassword = await hash('dev-freelancer-password');
   const freelancer = await prisma.user.upsert({
     where: { email: 'freelancer@example.com' },
     update: {},
@@ -45,10 +47,10 @@ async function main() {
       status: 'ACTIVE',
       email_verified: true,
     },
-  })
+  });
 
   // Create a client user
-  const clientPassword = await hash('dev-client-password')
+  const clientPassword = await hash('dev-client-password');
   const client = await prisma.user.upsert({
     where: { email: 'client@example.com' },
     update: {},
@@ -60,9 +62,9 @@ async function main() {
       status: 'ACTIVE',
       email_verified: true,
     },
-  })
+  });
 
-  console.log('Created users:', freelancer.email, client.email)
+  console.log('Created users:', freelancer.email, client.email);
 
   // Create freelancer profile
   const freelancerProfile = await prisma.freelancerProfile.upsert({
@@ -78,7 +80,7 @@ async function main() {
       availability: 'AVAILABLE',
       is_public: true,
     },
-  })
+  });
 
   // Create client profile
   const clientProfile = await prisma.clientProfile.upsert({
@@ -91,9 +93,9 @@ async function main() {
       location: 'Berlin, Germany',
       is_public: true,
     },
-  })
+  });
 
-  console.log('Created profiles')
+  console.log('Created profiles');
 
   // Link skills to freelancer profile
   for (const skill of skills.slice(0, 3)) {
@@ -102,10 +104,10 @@ async function main() {
         profile_id: freelancerProfile.id,
         skill_id: skill.id,
       },
-    })
+    });
   }
 
-  console.log('Linked skills to freelancer profile')
+  console.log('Linked skills to freelancer profile');
 
   // Create a portfolio item
   await prisma.portfolioItem.create({
@@ -116,9 +118,9 @@ async function main() {
       url: 'https://example.com/portfolio/ecommerce',
       thumbnail_url: 'https://example.com/portfolio/ecommerce-thumb.jpg',
     },
-  })
+  });
 
-  console.log('Created portfolio item')
+  console.log('Created portfolio item');
 
   // Create a published project
   const project = await prisma.project.create({
@@ -139,18 +141,18 @@ async function main() {
       },
     },
     include: { skills: { include: { skill: true } } },
-  })
+  });
 
-  console.log('Created project:', project.title)
+  console.log('Created project:', project.title);
 
-  console.log('Seeding complete!')
+  console.log('Seeding complete!');
 }
 
 main()
   .catch((e) => {
-    console.error(e)
-    process.exit(1)
+    console.error(e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });

@@ -1,9 +1,5 @@
-import type {
-  FastifyRequest,
-  FastifyReply,
-  HookHandlerDoneFunction,
-} from 'fastify'
-import type { ZodSchema, ZodError } from 'zod'
+import type { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
+import type { ZodSchema, ZodError } from 'zod';
 
 /* Craftlane — Zod validation middleware
  *
@@ -13,30 +9,24 @@ import type { ZodSchema, ZodError } from 'zod'
  */
 
 export interface ValidationSchemas {
-  body?: ZodSchema
-  query?: ZodSchema
-  params?: ZodSchema
+  body?: ZodSchema;
+  query?: ZodSchema;
+  params?: ZodSchema;
 }
 
-export function validationMiddleware(
-  schemas: ValidationSchemas,
-) {
-  return async (
-    request: FastifyRequest,
-    reply: FastifyReply,
-    done: HookHandlerDoneFunction,
-  ) => {
-    const errors: Record<string, string[]> = {}
+export function validationMiddleware(schemas: ValidationSchemas) {
+  return async (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {
+    const errors: Record<string, string[]> = {};
 
     if (schemas.body) {
       try {
-        request.body = schemas.body.parse(request.body)
+        request.body = schemas.body.parse(request.body);
       } catch (err) {
         if (err instanceof ZodError) {
           for (const issue of err.issues) {
-            const path = issue.path.join('.') || 'body'
-            if (!errors[path]) errors[path] = []
-            errors[path].push(issue.message)
+            const path = issue.path.join('.') || 'body';
+            if (!errors[path]) errors[path] = [];
+            errors[path].push(issue.message);
           }
         }
       }
@@ -44,13 +34,13 @@ export function validationMiddleware(
 
     if (schemas.query) {
       try {
-        request.query = schemas.query.parse(request.query)
+        request.query = schemas.query.parse(request.query);
       } catch (err) {
         if (err instanceof ZodError) {
           for (const issue of err.issues) {
-            const path = issue.path.join('.') || 'query'
-            if (!errors[path]) errors[path] = []
-            errors[path].push(issue.message)
+            const path = issue.path.join('.') || 'query';
+            if (!errors[path]) errors[path] = [];
+            errors[path].push(issue.message);
           }
         }
       }
@@ -58,13 +48,13 @@ export function validationMiddleware(
 
     if (schemas.params) {
       try {
-        request.params = schemas.params.parse(request.params)
+        request.params = schemas.params.parse(request.params);
       } catch (err) {
         if (err instanceof ZodError) {
           for (const issue of err.issues) {
-            const path = issue.path.join('.') || 'params'
-            if (!errors[path]) errors[path] = []
-            errors[path].push(issue.message)
+            const path = issue.path.join('.') || 'params';
+            if (!errors[path]) errors[path] = [];
+            errors[path].push(issue.message);
           }
         }
       }
@@ -75,10 +65,10 @@ export function validationMiddleware(
         error: 'validation_error',
         message: 'Request validation failed',
         details: errors,
-      })
-      done(new Error('validation failed'))
-      return
+      });
+      done(new Error('validation failed'));
+      return;
     }
-    done()
-  }
+    done();
+  };
 }

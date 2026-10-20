@@ -1,5 +1,5 @@
-import type { FastifyInstance } from 'fastify'
-import { authenticate, type AuthenticatedRequest } from '@/middleware/auth'
+import type { FastifyInstance } from 'fastify';
+import { authenticate, type AuthenticatedRequest } from '@/middleware/auth';
 import {
   signup as signupService,
   signin as signinService,
@@ -13,10 +13,10 @@ import {
   ForgotPasswordSchema,
   ResetPasswordSchema,
   VerifyEmailSchema,
-} from '@/services/auth.service'
-import { validationMiddleware } from '@/middleware/validation'
+} from '@/services/auth.service';
+import { validationMiddleware } from '@/middleware/validation';
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import { z } from 'zod'
+import { z } from 'zod';
 
 /* Craftlane — Auth routes
  *
@@ -37,17 +37,17 @@ export default async function authRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const result = await signupService(request.body as z.infer<typeof SignupSchema>)
-        return reply.status(201).send(result)
+        const result = await signupService(request.body as z.infer<typeof SignupSchema>);
+        return reply.status(201).send(result);
       } catch (err) {
-        const e = err as Error & { statusCode?: number }
+        const e = err as Error & { statusCode?: number };
         if (e.statusCode === 409) {
-          return reply.status(409).send({ error: 'conflict', message: e.message })
+          return reply.status(409).send({ error: 'conflict', message: e.message });
         }
-        throw err
+        throw err;
       }
-    },
-  )
+    }
+  );
 
   fastify.post(
     '/signin',
@@ -56,43 +56,33 @@ export default async function authRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       try {
-        const result = await signinService(request.body as z.infer<typeof SigninSchema>)
-        return reply.status(200).send(result)
+        const result = await signinService(request.body as z.infer<typeof SigninSchema>);
+        return reply.status(200).send(result);
       } catch (err) {
-        const e = err as Error & { statusCode?: number }
+        const e = err as Error & { statusCode?: number };
         if (e.statusCode === 401 || e.statusCode === 403) {
-          return reply
-            .status(e.statusCode)
-            .send({ error: 'auth_failed', message: e.message })
+          return reply.status(e.statusCode).send({ error: 'auth_failed', message: e.message });
         }
-        throw err
+        throw err;
       }
-    },
-  )
+    }
+  );
 
-  fastify.post(
-    '/signout',
-    { preHandler: [authenticate] },
-    async (request, reply) => {
-      const req = request as AuthenticatedRequest
-      const session = req.session
-      if (session) {
-        await signoutService(session.id)
-      }
-      return reply.status(200).send({ success: true })
-    },
-  )
+  fastify.post('/signout', { preHandler: [authenticate] }, async (request, reply) => {
+    const req = request as AuthenticatedRequest;
+    const session = req.session;
+    if (session) {
+      await signoutService(session.id);
+    }
+    return reply.status(200).send({ success: true });
+  });
 
-  fastify.get(
-    '/me',
-    { preHandler: [authenticate] },
-    async (request, reply) => {
-      const req = request as AuthenticatedRequest
-      const userId = req.user?.id
-      const result = await getMeService(userId)
-      return reply.status(200).send(result)
-    },
-  )
+  fastify.get('/me', { preHandler: [authenticate] }, async (request, reply) => {
+    const req = request as AuthenticatedRequest;
+    const userId = req.user?.id;
+    const result = await getMeService(userId);
+    return reply.status(200).send(result);
+  });
 
   fastify.post(
     '/forgot-password',
@@ -100,12 +90,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
       preHandler: [validationMiddleware({ body: ForgotPasswordSchema })],
     },
     async (request, reply) => {
-      const result = await forgotPassword(
-        request.body as z.infer<typeof ForgotPasswordSchema>,
-      )
-      return reply.status(200).send(result)
-    },
-  )
+      const result = await forgotPassword(request.body as z.infer<typeof ForgotPasswordSchema>);
+      return reply.status(200).send(result);
+    }
+  );
 
   fastify.post(
     '/reset-password',
@@ -113,12 +101,10 @@ export default async function authRoutes(fastify: FastifyInstance) {
       preHandler: [validationMiddleware({ body: ResetPasswordSchema })],
     },
     async (request, reply) => {
-      const result = await resetPassword(
-        request.body as z.infer<typeof ResetPasswordSchema>,
-      )
-      return reply.status(200).send(result)
-    },
-  )
+      const result = await resetPassword(request.body as z.infer<typeof ResetPasswordSchema>);
+      return reply.status(200).send(result);
+    }
+  );
 
   fastify.post(
     '/verify-email',
@@ -126,10 +112,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
       preHandler: [validationMiddleware({ body: VerifyEmailSchema })],
     },
     async (request, reply) => {
-      const result = await verifyEmail(
-        request.body as z.infer<typeof VerifyEmailSchema>,
-      )
-      return reply.status(200).send(result)
-    },
-  )
+      const result = await verifyEmail(request.body as z.infer<typeof VerifyEmailSchema>);
+      return reply.status(200).send(result);
+    }
+  );
 }

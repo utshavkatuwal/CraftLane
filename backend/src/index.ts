@@ -1,11 +1,11 @@
-import fastify from 'fastify'
-import { prisma } from '@/lib/prisma'
-import authRoutes from '@/routes/auth'
-import projectRoutes from '@/routes/projects'
-import proposalRoutes from '@/routes/proposals'
-import profileRoutes from '@/routes/profiles'
-import skillRoutes from '@/routes/skills'
-import healthRoutes from '@/routes/health'
+import fastify from 'fastify';
+import { prisma } from '@/lib/prisma';
+import authRoutes from '@/routes/auth';
+import projectRoutes from '@/routes/projects';
+import proposalRoutes from '@/routes/proposals';
+import profileRoutes from '@/routes/profiles';
+import skillRoutes from '@/routes/skills';
+import healthRoutes from '@/routes/health';
 
 /* Craftlane — Backend entry point
  *
@@ -24,86 +24,86 @@ export function buildApp() {
     logger: process.env.NODE_ENV === 'development',
     requestTimeout: 30000,
     keepAliveTimeout: 5000,
-  })
+  });
 
   // Health routes (no auth required)
-  app.register(healthRoutes, { prefix: '/health' })
+  app.register(healthRoutes, { prefix: '/health' });
 
   // Auth routes
-  app.register(authRoutes, { prefix: '/auth' })
+  app.register(authRoutes, { prefix: '/auth' });
 
   // Project routes
-  app.register(projectRoutes, { prefix: '/projects' })
+  app.register(projectRoutes, { prefix: '/projects' });
 
   // Proposal routes
-  app.register(proposalRoutes, { prefix: '/proposals' })
+  app.register(proposalRoutes, { prefix: '/proposals' });
 
   // Profile routes
-  app.register(profileRoutes, { prefix: '/profiles' })
+  app.register(profileRoutes, { prefix: '/profiles' });
 
   // Skills routes
-  app.register(skillRoutes, { prefix: '/skills' })
+  app.register(skillRoutes, { prefix: '/skills' });
 
   // 404 handler
   app.setNotFoundHandler((_, reply) => {
-    return reply.status(404).send({ error: 'not_found', message: 'Route not found' })
-  })
+    return reply.status(404).send({ error: 'not_found', message: 'Route not found' });
+  });
 
   // Global error handler
   app.setErrorHandler((error, _, reply) => {
-    app.log.error(error)
+    app.log.error(error);
 
-    const err = error as Error & { statusCode?: number }
+    const err = error as Error & { statusCode?: number };
     if (err.statusCode) {
       return reply.status(err.statusCode).send({
         error: err.name,
         message: err.message,
-      })
+      });
     }
 
     return reply.status(500).send({
       error: 'internal_server_error',
       message:
         process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred',
-    })
-  })
+    });
+  });
 
-  return app
+  return app;
 }
 
-const app = buildApp()
+const app = buildApp();
 
-const PORT = parseInt(process.env.PORT || '8000', 10)
-const HOST = process.env.HOST || '0.0.0.0'
+const PORT = parseInt(process.env.PORT || '8000', 10);
+const HOST = process.env.HOST || '0.0.0.0';
 
 async function start() {
   try {
-    await app.listen({ port: PORT, host: HOST })
-    app.log.info(`Craftlane backend listening on ${HOST}:${PORT}`)
+    await app.listen({ port: PORT, host: HOST });
+    app.log.info(`Craftlane backend listening on ${HOST}:${PORT}`);
   } catch (err) {
-    app.log.error(err)
-    process.exit(1)
+    app.log.error(err);
+    process.exit(1);
   }
 }
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  app.log.info('SIGTERM received, shutting down')
-  await app.close()
-  await prisma.$disconnect()
-  process.exit(0)
-})
+  app.log.info('SIGTERM received, shutting down');
+  await app.close();
+  await prisma.$disconnect();
+  process.exit(0);
+});
 
 process.on('SIGINT', async () => {
-  app.log.info('SIGINT received, shutting down')
-  await app.close()
-  await prisma.$disconnect()
-  process.exit(0)
-})
+  app.log.info('SIGINT received, shutting down');
+  await app.close();
+  await prisma.$disconnect();
+  process.exit(0);
+});
 
 // Only start if run directly (not imported in tests)
 if (process.env.NODE_ENV !== 'test') {
-  start()
+  start();
 }
 
-export { app }
+export { app };
