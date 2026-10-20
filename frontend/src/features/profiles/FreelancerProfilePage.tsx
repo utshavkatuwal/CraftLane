@@ -15,9 +15,23 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { fetchFreelancerProfile } from '@/features/profiles/profile.service';
 import styles from './FreelancerProfilePage.module.css';
 
+type Profile = {
+  full_name: string | null;
+  headline: string | null;
+  bio: string | null;
+  skills: string[];
+  portfolio: Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    url: string | null;
+    thumbnail_url: string | null;
+  }>;
+};
+
 export function FreelancerProfilePage() {
   const { id } = useParams();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +45,7 @@ export function FreelancerProfilePage() {
     let cancelled = false;
     fetchFreelancerProfile(id)
       .then((data) => {
-        if (!cancelled) setProfile(data);
+        if (!cancelled) setProfile(data as Profile);
       })
       .catch((err) => {
         if (!cancelled) {
@@ -101,14 +115,12 @@ export function FreelancerProfilePage() {
 
               <section className={styles.bio}>
                 <h2 className={styles.sectionTitle}>About</h2>
-                <p className={styles.bioText}>
-                  {profile.bio || 'No biography has been provided.'}
-                </p>
+                <p className={styles.bioText}>{profile.bio || 'No biography has been provided.'}</p>
               </section>
 
               <section className={styles.skills}>
                 <h2 className={styles.sectionTitle}>Skills</h2>
-                {profile.skills?.length ? (
+                {profile.skills.length ? (
                   <div className={styles.skillList}>
                     {profile.skills.map((skill: string) => (
                       <span key={skill} className={styles.skillChip}>
@@ -123,16 +135,21 @@ export function FreelancerProfilePage() {
 
               <section className={styles.portfolio}>
                 <h2 className={styles.sectionTitle}>Portfolio</h2>
-                {profile.portfolio?.length ? (
+                {profile.portfolio.length ? (
                   <div className={styles.portfolioList}>
-                    {profile.portfolio.map((item: any) => (
+                    {profile.portfolio.map((item) => (
                       <div key={item.id} className={styles.portfolioItem}>
                         <h4 className={styles.portfolioItemTitle}>{item.title}</h4>
                         <p className={styles.portfolioItemDesc}>
                           {item.description || 'No description provided.'}
                         </p>
                         {item.url && (
-                          <a href={item.url} target="_blank" rel="noopener noreferrer" className={styles.portfolioItemLink}>
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.portfolioItemLink}
+                          >
                             View project
                           </a>
                         )}
@@ -142,9 +159,7 @@ export function FreelancerProfilePage() {
                 ) : (
                   <EmptyState
                     title="No portfolio items"
-                    description={
-                      'Portfolio items will appear here once they are added.'
-                    }
+                    description={'Portfolio items will appear here once they are added.'}
                   />
                 )}
               </section>

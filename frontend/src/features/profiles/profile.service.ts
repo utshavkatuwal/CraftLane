@@ -6,20 +6,21 @@
 
 import { api } from '@/services/api-client';
 import { API } from '@/services/endpoints';
+import type { Profile } from '@/types';
 
 /* Fetch a freelancer's public profile by ID. */
-export async function fetchFreelancerProfile(id: string): Promise<any> {
-  return api.get<any>(API.profiles.freelancer(id));
+export async function fetchFreelancerProfile(id: string): Promise<Profile> {
+  return api.get<Profile>(API.profiles.freelancer(id));
 }
 
 /* Fetch a client's public profile by ID. */
-export async function fetchClientProfile(id: string): Promise<any> {
-  return api.get<any>(API.profiles.client(id));
+export async function fetchClientProfile(id: string): Promise<Profile> {
+  return api.get<Profile>(API.profiles.client(id));
 }
 
 /* Fetch the current user's profile. */
-export async function fetchMyProfile(): Promise<any> {
-  return api.get<any>(API.profiles.me);
+export async function fetchMyProfile(): Promise<Profile> {
+  return api.get<Profile>(API.profiles.me);
 }
 
 /* Update the current user's freelancer profile. */
@@ -32,6 +33,6 @@ export async function updateFreelancerProfile(data: {
   availability?: 'available' | 'busy' | 'unavailable' | null;
   is_public?: boolean;
   skills?: string[];
-}): Promise<any> {
-  return api.patch<any>(API.profiles.me, data);
+}): Promise<Profile> {
+  return api.patch<Profile>(API.profiles.me, data);
 }

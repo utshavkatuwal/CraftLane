@@ -17,7 +17,9 @@ import styles from './ClientDashboardPage.module.css';
 
 export function ClientDashboardPage() {
   const [activeTab, setActiveTab] = useState<'projects' | 'proposals'>('projects');
-  const [projects, setProjects] = useState<{ id: string; title: string; description: string; status: string }[]>([]);
+  const [projects, setProjects] = useState<
+    { id: string; title: string; description: string; status: string }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -140,9 +142,7 @@ export function ClientDashboardPage() {
                     }
                   />
                 )}
-                <p className={styles.note}>
-                  Project listings, budgets, and statuses appear here.
-                </p>
+                <p className={styles.note}>Project listings, budgets, and statuses appear here.</p>
               </section>
             ) : (
               <section className={styles.section}>
@@ -153,8 +153,7 @@ export function ClientDashboardPage() {
                 <EmptyState
                   title="No proposals"
                   description={
-                    'Proposals from freelancers will appear here once you ' +
-                    'publish a project.'
+                    'Proposals from freelancers will appear here once you ' + 'publish a project.'
                   }
                 />
                 <p className={styles.note}>

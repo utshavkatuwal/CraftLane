@@ -98,6 +98,23 @@ export interface Proposal {
   updated_at: string;
 }
 
+export interface Profile {
+  full_name: string | null;
+  headline: string | null;
+  bio: string | null;
+  skills: string[];
+  hourly_rate: number | null;
+  currency: string | null;
+  availability: string | null;
+  portfolio: Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    url: string | null;
+    thumbnail_url: string | null;
+  }>;
+}
+
 /* ------------------------------------------------------------------ */
 /* API request / response shapes                                      */
 /* ------------------------------------------------------------------ */

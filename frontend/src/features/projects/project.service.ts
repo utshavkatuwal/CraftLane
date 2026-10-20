@@ -39,7 +39,7 @@ export async function updateProject(
     currency?: string | null;
     deadline?: string | null;
     status?: string;
-  },
+  }
 ): Promise<Project> {
   return api.patch<Project>(API.projects.update(id), data);
 }

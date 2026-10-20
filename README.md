@@ -8,15 +8,12 @@ and structured milestone collaboration.
 
 ## Current Status
 
-**Phase 1 & 2: Project Foundation, Frontend, and Database Layer**
+**Phase 1 & 2: Project Foundation, Frontend, and Backend API — Complete**
 
-The frontend (React + TypeScript + Vite) is complete and runs standalone.
-The database layer (PostgreSQL + Prisma ORM) and backend API (Fastify +
-TypeScript) have been implemented. The backend requires a PostgreSQL
-database to run; see the Database Setup section below.
-
-No fake data is used: no fabricated users, reviews, ratings, projects,
-earnings, or activity metrics.
+The frontend (React + TypeScript + Vite) and backend (Fastify + TypeScript +
+Prisma + PostgreSQL) are fully implemented and integrated. All core pages
+connect to real backend API endpoints. No fake data is used: no fabricated
+users, reviews, ratings, projects, earnings, or activity metrics.
 
 ## Core Product Principles
 
@@ -117,6 +114,7 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 ```
 PORT=8000
+HOST=0.0.0.0
 NODE_ENV=development
 DATABASE_URL=postgresql://craftlane:craftlane@localhost:5432/craftlane
 JWT_SECRET=change-me-in-production
@@ -176,9 +174,16 @@ craftlane/
 │   ├── src/
 │   │   ├── lib/             # Prisma client, auth utilities
 │   │   ├── routes/          # API route handlers
-│   │   ├── services/        # Business logic
-│   │   └── middleware/      # Auth and validation middleware
-│   └── tests/               # Database integration tests
+│   │   │   ├── auth.ts      # Authentication endpoints
+│   │   │   ├── projects.ts  # Project CRUD endpoints
+│   │   │   ├── proposals.ts # Proposal CRUD endpoints
+│   │   │   ├── profiles.ts  # Profile CRUD endpoints
+│   │   │   ├── skills.ts    # Skills listing endpoint
+│   │   │   └── health.ts    # Health check endpoints
+│   │   ├── middleware/      # Auth and validation middleware
+│   │   ├── services/        # Business logic (auth service)
+│   │   └── index.ts         # Application entry point
+│   └── tests/               # API tests
 ├── docs/                    # Product and architecture documentation
 │   └── database/            # Database documentation
 ├── README.md                # This file
@@ -190,6 +195,55 @@ craftlane/
 ├── .editorconfig            # Editor configuration
 └── .env.example             # Environment variable template (root reference)
 ```
+
+## API Endpoints
+
+### Authentication
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/auth/signup` | Register a new account | No |
+| POST | `/auth/signin` | Sign in and create a session | No |
+| POST | `/auth/signout` | Sign out and invalidate session | Yes |
+| GET | `/auth/me` | Get current user profile | Yes |
+| POST | `/auth/forgot-password` | Request a password reset | No |
+| POST | `/auth/reset-password` | Reset password using a token | No |
+| POST | `/auth/verify-email` | Verify email using a token | No |
+
+### Projects
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/projects` | List published projects (with filters) | No |
+| GET | `/projects/:id` | Get a single project | No |
+| POST | `/projects` | Create a project | Yes (client) |
+| PATCH | `/projects/:id` | Update a project | Yes (owner) |
+| POST | `/projects/:id/close` | Close a project | Yes (owner) |
+
+### Proposals
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/projects/:projectId/proposals` | List proposals for a project | Yes |
+| POST | `/projects/:projectId/proposals` | Submit a proposal | Yes (freelancer) |
+| GET | `/proposals/:id` | Get a single proposal | Yes |
+| POST | `/proposals/:id/decide` | Accept or reject a proposal | Yes (client) |
+
+### Profiles
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/profiles/me` | Get own profile | Yes |
+| GET | `/profiles/freelancer/:id` | Get a freelancer's public profile | No |
+| GET | `/profiles/client/:id` | Get a client's public profile | No |
+| PATCH | `/profiles/me` | Update own profile | Yes |
+
+### Skills
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/skills` | List all available skills | No |
+
+### Health
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/health` | Basic process health | No |
+| GET | `/health/db` | Database connectivity check | No |
 
 ## Documentation
 
@@ -208,12 +262,11 @@ craftlane/
 
 ## Current Limitations
 
-- The backend requires PostgreSQL; it cannot run without a database.
-- PostgreSQL is not installed in the current environment (see setup
-  instructions above).
-- Backend integration tests require a test database (`TEST_DATABASE_URL`).
+- PostgreSQL is required for the backend; it is not installed in the current environment
+- Backend integration tests require a test database (`TEST_DATABASE_URL`)
 - Payments, escrow, messaging, notifications, and reviews are not implemented
-  in this phase.
+  in this phase (planned for future releases)
+- Administrative moderation tools are not yet implemented
 
 ## Contributing
 

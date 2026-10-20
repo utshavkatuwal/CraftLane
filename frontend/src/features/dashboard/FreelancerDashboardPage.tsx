@@ -14,34 +14,13 @@ import { Link } from '@/components/ui/Link';
 import { fetchProposals } from '@/features/marketplace/proposal.service';
 import { fetchProjects } from '@/features/marketplace/marketplace.service';
 import { fetchMyProfile } from '@/features/profiles/profile.service';
+import type { Proposal, Profile, Project } from '@/types';
 import styles from './FreelancerDashboardPage.module.css';
 
-type Proposal = {
-  id: string;
-  project_id: string;
-  cover_message: string;
-  proposed_price: number | null;
-  status: string;
-};
-
-type Project = {
-  id: string;
-  title: string;
-  status: string;
-};
-
-type Profile = {
-  headline: string | null;
-  bio: string | null;
-  skills: string[];
-  hourly_rate: number | null;
-  availability: string | null;
-};
-
 export function FreelancerDashboardPage() {
-  const [activeTab, setActiveTab] = useState<
-    'proposals' | 'projects' | 'milestones' | 'profile'
-  >('proposals');
+  const [activeTab, setActiveTab] = useState<'proposals' | 'projects' | 'milestones' | 'profile'>(
+    'proposals'
+  );
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -62,7 +41,7 @@ export function FreelancerDashboardPage() {
         if (!cancelled) {
           setProposals(proposalsData || []);
           setProjects(projectsData.projects || []);
-          setProfile(profileData as Profile);
+          setProfile(profileData);
         }
       } catch (err) {
         if (!cancelled) {
@@ -143,9 +122,7 @@ export function FreelancerDashboardPage() {
                           <h4 className={styles.proposalCardTitle}>
                             Proposal for project {proposal.project_id}
                           </h4>
-                          <span className={styles.proposalCardStatus}>
-                            {proposal.status}
-                          </span>
+                          <span className={styles.proposalCardStatus}>{proposal.status}</span>
                         </div>
                         <div className={styles.proposalCardPrice}>
                           {proposal.proposed_price !== null ? `$${proposal.proposed_price}` : '—'}
@@ -157,8 +134,7 @@ export function FreelancerDashboardPage() {
                   <EmptyState
                     title="No proposals yet"
                     description={
-                      'Proposals you submit will appear here once the backend ' +
-                      'is connected.'
+                      'Proposals you submit will appear here once the backend ' + 'is connected.'
                     }
                     action={
                       <Link to="/work">
@@ -185,12 +161,8 @@ export function FreelancerDashboardPage() {
                     {projects.map((project: Project) => (
                       <div key={project.id} className={styles.projectCard}>
                         <div className={styles.projectCardInfo}>
-                          <h4 className={styles.projectCardTitle}>
-                            {project.title}
-                          </h4>
-                          <span className={styles.projectCardStatus}>
-                            {project.status}
-                          </span>
+                          <h4 className={styles.projectCardTitle}>{project.title}</h4>
+                          <span className={styles.projectCardStatus}>{project.status}</span>
                         </div>
                         <Link to={`/work/${project.id}`}>
                           <Button variant="outline" size="sm">
@@ -227,9 +199,7 @@ export function FreelancerDashboardPage() {
                     'appear here once the backend is connected.'
                   }
                 />
-                <p className={styles.note}>
-                  Milestone state and submission history appear here.
-                </p>
+                <p className={styles.note}>Milestone state and submission history appear here.</p>
               </section>
             )}
             {activeTab === 'profile' && (
@@ -263,8 +233,7 @@ export function FreelancerDashboardPage() {
                   <EmptyState
                     title="Profile not yet complete"
                     description={
-                      'Add your biography, skills, experience, and portfolio ' +
-                      'items.'
+                      'Add your biography, skills, experience, and portfolio ' + 'items.'
                     }
                   />
                 )}

@@ -28,14 +28,14 @@ const schema = z.object({
     .optional()
     .refine(
       (val) => val === '' || val === undefined || !isNaN(Number(val)),
-      'Budget must be a valid number.',
+      'Budget must be a valid number.'
     ),
   budget_max: z
     .string()
     .optional()
     .refine(
       (val) => val === '' || val === undefined || !isNaN(Number(val)),
-      'Budget must be a valid number.',
+      'Budget must be a valid number.'
     ),
   currency: z.string().length(3, 'Currency must be a 3-letter code.'),
   deadline: z.string().optional(),
@@ -96,7 +96,10 @@ export function ProjectCreatePage() {
         currency: data.currency,
         deadline: data.deadline || undefined,
         skills: data.skills
-          ? data.skills.split(',').map((s) => s.trim()).filter(Boolean)
+          ? data.skills
+              .split(',')
+              .map((s) => s.trim())
+              .filter(Boolean)
           : [],
       });
       navigate(`/work`);
@@ -116,22 +119,14 @@ export function ProjectCreatePage() {
             <div className={styles.header}>
               <h2 className={styles.title}>Post a project</h2>
               <p className={styles.description}>
-                Define your project scope, budget, and timeline to attract
-                qualified freelancers.
+                Define your project scope, budget, and timeline to attract qualified freelancers.
               </p>
             </div>
 
-            {serverError && (
-              <ErrorMessage title="Could not create project" message={serverError} />
-            )}
+            {serverError && <ErrorMessage title="Could not create project" message={serverError} />}
 
             <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
-              <FormField
-                id="title"
-                label="Project title"
-                required
-                error={errors.title?.message}
-              >
+              <FormField id="title" label="Project title" required error={errors.title?.message}>
                 <Input
                   {...register('title')}
                   placeholder="e.g. Website redesign"
@@ -153,10 +148,7 @@ export function ProjectCreatePage() {
               </FormField>
 
               <FormField id="project_type" label="Project type" required>
-                <select
-                  {...register('project_type')}
-                  className={styles.select}
-                >
+                <select {...register('project_type')} className={styles.select}>
                   <option value="fixed_price">Fixed price</option>
                   <option value="hourly">Hourly</option>
                 </select>
@@ -190,19 +182,11 @@ export function ProjectCreatePage() {
               </div>
 
               <FormField id="currency" label="Currency">
-                <Input
-                  {...register('currency')}
-                  placeholder="USD"
-                  autoComplete="off"
-                />
+                <Input {...register('currency')} placeholder="USD" autoComplete="off" />
               </FormField>
 
               <FormField id="deadline" label="Deadline (optional)">
-                <Input
-                  {...register('deadline')}
-                  type="datetime-local"
-                  autoComplete="off"
-                />
+                <Input {...register('deadline')} type="datetime-local" autoComplete="off" />
               </FormField>
 
               <FormField id="skills" label="Required skills (comma-separated)">

@@ -12,11 +12,12 @@ import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { Loader } from '@/components/ui/Loader';
 import { Link } from '@/components/ui/Link';
 import { fetchProject } from '@/features/projects/project.service';
+import type { Project } from '@/types';
 import styles from './ProjectDetailPage.module.css';
 
 export function ProjectDetailPage() {
   const { projectId } = useParams();
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,18 +81,18 @@ export function ProjectDetailPage() {
                   <Badge variant="brand">{project.project_type}</Badge>
                 </div>
                 <h1 className={styles.title}>{project.title}</h1>
-                <p className={styles.subtitle}>
-                  {project.description}
-                </p>
+                <p className={styles.subtitle}>{project.description}</p>
                 <p className={styles.meta}>
-                  <span>Budget: {project.budget_min !== null ? `$${project.budget_min}` : '—'}</span>
-                  {project.budget_max !== null ? (
-                    <span> – ${project.budget_max}</span>
-                  ) : null}
+                  <span>
+                    Budget: {project.budget_min !== null ? `$${project.budget_min}` : '—'}
+                  </span>
+                  {project.budget_max !== null ? <span> – ${project.budget_max}</span> : null}
                   {project.currency ? ` ${project.currency}` : ''}
                 </p>
                 <p className={styles.meta}>
-                  {project.deadline ? `Deadline: ${new Date(project.deadline).toLocaleDateString()}` : 'No deadline set'}
+                  {project.deadline
+                    ? `Deadline: ${new Date(project.deadline).toLocaleDateString()}`
+                    : 'No deadline set'}
                 </p>
               </header>
 
