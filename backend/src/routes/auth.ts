@@ -31,7 +31,9 @@ import { z } from 'zod'
 export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/signup',
-    validationMiddleware({ body: SignupSchema }),
+    {
+      preHandler: [validationMiddleware({ body: SignupSchema })],
+    },
     async (request, reply) => {
       try {
         const result = await signupService(request.body as z.infer<typeof SignupSchema>)
@@ -47,7 +49,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
   fastify.post(
     '/signin',
-    validationMiddleware({ body: SigninSchema }),
+    {
+      preHandler: [validationMiddleware({ body: SigninSchema })],
+    },
     async (request, reply) => {
       try {
         const result = await signinService(request.body as z.infer<typeof SigninSchema>)
@@ -87,7 +91,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
   fastify.post(
     '/forgot-password',
-    validationMiddleware({ body: ForgotPasswordSchema }),
+    {
+      preHandler: [validationMiddleware({ body: ForgotPasswordSchema })],
+    },
     async (request, reply) => {
       const result = await forgotPassword(
         request.body as z.infer<typeof ForgotPasswordSchema>,
@@ -98,7 +104,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
   fastify.post(
     '/reset-password',
-    validationMiddleware({ body: ResetPasswordSchema }),
+    {
+      preHandler: [validationMiddleware({ body: ResetPasswordSchema })],
+    },
     async (request, reply) => {
       const result = await resetPassword(
         request.body as z.infer<typeof ResetPasswordSchema>,
@@ -109,7 +117,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
 
   fastify.post(
     '/verify-email',
-    validationMiddleware({ body: VerifyEmailSchema }),
+    {
+      preHandler: [validationMiddleware({ body: VerifyEmailSchema })],
+    },
     async (request, reply) => {
       const result = await verifyEmail(
         request.body as z.infer<typeof VerifyEmailSchema>,
