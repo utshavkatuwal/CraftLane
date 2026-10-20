@@ -1,26 +1,51 @@
 /* Craftlane — Freelancer profile page
- * Layout for a freelancer's public profile. Renders only supplied fields;
- * portfolio items, skills, and experience are shown honestly — never
- * fabricated.
+ * Layout for a freelancer's public profile. Fetches profile data from the
+ * backend and renders only supplied fields; portfolio items, skills, and
+ * experience are shown honestly — never fabricated.
  */
 
-import { useParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { Loader } from '@/components/ui/Loader';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { fetchFreelancerProfile } from '@/features/profiles/profile.service';
 import styles from './FreelancerProfilePage.module.css';
 
 export function FreelancerProfilePage() {
   const { id } = useParams();
-  const [isLoading] = useState(false);
-  const [error] = useState<string | null>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // NOTE: No freelancer data is fabricated. This page is prepared for backend
-  // integration; until a real profile is available it renders an honest state.
+  useEffect(() => {
+    if (!id) {
+      setError('Profile ID not found');
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    fetchFreelancerProfile(id)
+      .then((data) => {
+        if (!cancelled) setProfile(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load profile.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   return (
     <div className={styles.page}>
@@ -48,14 +73,16 @@ export function FreelancerProfilePage() {
                 }
               />
             </div>
-          ) : (
+          ) : profile ? (
             <article className={styles.card}>
               <header className={styles.profileHeader}>
                 <div className={styles.identity}>
-                  <Avatar size="lg" name={id || 'Freelancer'} />
+                  <Avatar size="lg" name={profile.full_name || 'Freelancer'} />
                   <div>
-                    <h1 className={styles.name}>Freelancer profile</h1>
-                    <p className={styles.headline}>Professional headline not available</p>
+                    <h1 className={styles.name}>{profile.full_name || 'Freelancer'}</h1>
+                    <p className={styles.headline}>
+                      {profile.headline || 'Professional headline not available'}
+                    </p>
                   </div>
                 </div>
                 <div className={styles.actions}>
@@ -75,33 +102,54 @@ export function FreelancerProfilePage() {
               <section className={styles.bio}>
                 <h2 className={styles.sectionTitle}>About</h2>
                 <p className={styles.bioText}>
-                  No biography has been provided. When a backend is connected, this section will
-                  show the freelancer's self-reported biography and verifiable profile information.
+                  {profile.bio || 'No biography has been provided.'}
                 </p>
               </section>
 
               <section className={styles.skills}>
                 <h2 className={styles.sectionTitle}>Skills</h2>
-                <p className={styles.emptyNote}>No skills listed.</p>
+                {profile.skills?.length ? (
+                  <div className={styles.skillList}>
+                    {profile.skills.map((skill: string) => (
+                      <span key={skill} className={styles.skillChip}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.emptyNote}>No skills listed.</p>
+                )}
               </section>
 
               <section className={styles.portfolio}>
                 <h2 className={styles.sectionTitle}>Portfolio</h2>
-                <EmptyState
-                  title="No portfolio items"
-                  description={
-                    'Portfolio items will appear here once the backend is connected. ' +
-                    'Any examples shown during development are structural illustrations only.'
-                  }
-                />
-              </section>
-
-              <section className={styles.experience}>
-                <h2 className={styles.sectionTitle}>Experience</h2>
-                <p className={styles.emptyNote}>No experience listed.</p>
+                {profile.portfolio?.length ? (
+                  <div className={styles.portfolioList}>
+                    {profile.portfolio.map((item: any) => (
+                      <div key={item.id} className={styles.portfolioItem}>
+                        <h4 className={styles.portfolioItemTitle}>{item.title}</h4>
+                        <p className={styles.portfolioItemDesc}>
+                          {item.description || 'No description provided.'}
+                        </p>
+                        {item.url && (
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className={styles.portfolioItemLink}>
+                            View project
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    title="No portfolio items"
+                    description={
+                      'Portfolio items will appear here once they are added.'
+                    }
+                  />
+                )}
               </section>
             </article>
-          )}
+          ) : null}
         </div>
       </main>
     </div>

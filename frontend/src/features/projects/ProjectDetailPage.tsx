@@ -1,29 +1,50 @@
 /* Craftlane — Project detail page
- * Structured page for a single project. Renders only supplied fields; missing
- * details are shown honestly as "—" rather than invented. Prepared for backend
- * integration via the API service layer; no project data is fabricated.
+ * Structured page for a single project. Fetches project data from the
+ * backend and displays it honestly. Missing details are shown as "—"
+ * rather than invented.
  */
 
-import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { Loader } from '@/components/ui/Loader';
 import { Link } from '@/components/ui/Link';
+import { fetchProject } from '@/features/projects/project.service';
 import styles from './ProjectDetailPage.module.css';
 
-interface ProjectDetailPageProps {
-  projectId?: string;
-}
+export function ProjectDetailPage() {
+  const { projectId } = useParams();
+  const [project, setProject] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
-  const [isLoading] = useState(false);
-  const [error] = useState<string | null>(null);
+  useEffect(() => {
+    if (!projectId) {
+      setError('Project ID not found');
+      setIsLoading(false);
+      return;
+    }
 
-  // NOTE: No project data is fabricated. When a real backend is connected,
-  // this page fetches the project via the API service layer. Until then it
-  // renders an honest state explaining that project details are not yet
-  // available from a live source.
+    let cancelled = false;
+    fetchProject(projectId)
+      .then((data) => {
+        if (!cancelled) setProject(data);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load project.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [projectId]);
 
   return (
     <div className={styles.page}>
@@ -51,35 +72,35 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 }
               />
             </div>
-          ) : (
+          ) : project ? (
             <article className={styles.card}>
               <header className={styles.cardHeader}>
                 <div className={styles.badgeRow}>
-                  <Badge variant="default">Project detail</Badge>
-                  <Badge variant="brand">Preview</Badge>
+                  <Badge variant="default">{project.status}</Badge>
+                  <Badge variant="brand">{project.project_type}</Badge>
                 </div>
-                <h1 className={styles.title}>
-                  Project {projectId ? `· ${projectId}` : ''} not available
-                </h1>
+                <h1 className={styles.title}>{project.title}</h1>
                 <p className={styles.subtitle}>
-                  Craftlane does not yet display live project details because the backend API is not
-                  connected. When implemented, this page will show the project title, description,
-                  required skills, budget, timeline, client information, and a proposal entry point.
+                  {project.description}
+                </p>
+                <p className={styles.meta}>
+                  <span>Budget: {project.budget_min !== null ? `$${project.budget_min}` : '—'}</span>
+                  {project.budget_max !== null ? (
+                    <span> – ${project.budget_max}</span>
+                  ) : null}
+                  {project.currency ? ` ${project.currency}` : ''}
+                </p>
+                <p className={styles.meta}>
+                  {project.deadline ? `Deadline: ${new Date(project.deadline).toLocaleDateString()}` : 'No deadline set'}
                 </p>
               </header>
 
               <section className={styles.fields}>
                 <div className={styles.fieldGroup}>
                   <h3 className={styles.fieldLabel}>Required skills</h3>
-                  <p className={styles.fieldValue}>—</p>
-                </div>
-                <div className={styles.fieldGroup}>
-                  <h3 className={styles.fieldLabel}>Budget / compensation</h3>
-                  <p className={styles.fieldValue}>—</p>
-                </div>
-                <div className={styles.fieldGroup}>
-                  <h3 className={styles.fieldLabel}>Timeline</h3>
-                  <p className={styles.fieldValue}>—</p>
+                  <p className={styles.fieldValue}>
+                    {project.skills?.length ? project.skills.join(', ') : '—'}
+                  </p>
                 </div>
               </section>
 
@@ -89,7 +110,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                 </Link>
               </div>
             </article>
-          )}
+          ) : null}
         </div>
       </main>
     </div>

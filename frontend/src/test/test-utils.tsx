@@ -8,6 +8,7 @@ import type { ReactElement, ReactNode, ComponentType } from 'react';
 import { render as rtlRender, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AuthProvider } from '@/features/auth/auth-context';
 
+// eslint-disable-next-line react-refresh/only-export-components
 const Wrapper: ComponentType<{ children: ReactNode }> = ({ children }) => (
   <MemoryRouter>
     <AuthProvider>{children}</AuthProvider>
