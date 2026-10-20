@@ -15,6 +15,7 @@ import {
   VerifyEmailSchema,
 } from '@/services/auth.service'
 import { validationMiddleware } from '@/middleware/validation'
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { z } from 'zod'
 
 /* Craftlane — Auth routes

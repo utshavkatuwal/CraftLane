@@ -229,8 +229,9 @@ export default async function projectRoutes(fastify: FastifyInstance) {
       ],
     },
     async (request, reply) => {
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
       const body = request.body as z.infer<typeof ProjectCreateSchema>
-      const userId = (request as any).user?.id
 
       // Get or create client profile
       let clientProfile = await prisma.clientProfile.findUnique({
@@ -333,9 +334,10 @@ export default async function projectRoutes(fastify: FastifyInstance) {
       ],
     },
     async (request, reply) => {
+      const req = request as AuthenticatedRequest
       const { id } = request.params as z.infer<typeof ProjectIdSchema>
       const body = request.body as z.infer<typeof ProjectUpdateSchema>
-      const userId = (request as any).user?.id
+      const userId = req.user?.id
 
       const project = await prisma.project.findUnique({
         where: { id },
@@ -346,7 +348,7 @@ export default async function projectRoutes(fastify: FastifyInstance) {
         return reply.status(404).send({ error: 'not_found', message: 'Project not found' })
       }
 
-      if (project.client.user_id !== userId && (request as any).user?.role !== 'ADMIN') {
+      if (project.client.user_id !== userId && req.user?.role !== 'ADMIN') {
         return reply.status(403).send({ error: 'forbidden', message: 'Not the project owner' })
       }
 
@@ -397,8 +399,9 @@ export default async function projectRoutes(fastify: FastifyInstance) {
       ],
     },
     async (request, reply) => {
+      const req = request as AuthenticatedRequest
       const { id } = request.params as z.infer<typeof ProjectIdSchema>
-      const userId = (request as any).user?.id
+      const userId = req.user?.id
 
       const project = await prisma.project.findUnique({
         where: { id },
@@ -409,7 +412,7 @@ export default async function projectRoutes(fastify: FastifyInstance) {
         return reply.status(404).send({ error: 'not_found', message: 'Project not found' })
       }
 
-      if (project.client.user_id !== userId && (request as any).user?.role !== 'ADMIN') {
+      if (project.client.user_id !== userId && req.user?.role !== 'ADMIN') {
         return reply.status(403).send({ error: 'forbidden', message: 'Not the project owner' })
       }
 

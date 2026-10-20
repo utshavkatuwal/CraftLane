@@ -3,7 +3,6 @@ import {
   hashPassword,
   findUserByEmail,
   findUserById,
-  signToken,
   hashToken,
 } from '@/lib/auth'
 import { z } from 'zod'
@@ -57,7 +56,7 @@ export const VerifyEmailSchema = z.object({
 export async function signup(data: z.infer<typeof SignupSchema>) {
   const existing = await findUserByEmail(data.email)
   if (existing) {
-    const err: any = new Error('Email already registered')
+    const err = new Error('Email already registered')
     err.statusCode = 409
     throw err
   }
@@ -108,7 +107,7 @@ export async function signup(data: z.infer<typeof SignupSchema>) {
 export async function signin(data: z.infer<typeof SigninSchema>) {
   const user = await findUserByEmail(data.email)
   if (!user) {
-    const err: any = new Error('Invalid email or password')
+    const err = new Error('Invalid email or password')
     err.statusCode = 401
     throw err
   }
@@ -116,7 +115,7 @@ export async function signin(data: z.infer<typeof SigninSchema>) {
   const { verify } = await import('argon2')
   const valid = await verify(user.password_hash, data.password)
   if (!valid) {
-    const err: any = new Error('Invalid email or password')
+    const err = new Error('Invalid email or password')
     err.statusCode = 401
     throw err
   }

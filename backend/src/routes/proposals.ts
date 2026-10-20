@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify'
-import { authenticate, authorize } from '@/middleware/auth'
+import type { FastifyInstance } from 'fastify'
+import { authenticate, authorize, type AuthenticatedRequest } from '@/middleware/auth'
 import { prisma } from '@/lib/prisma'
 import { validationMiddleware } from '@/middleware/validation'
 import { z } from 'zod'
@@ -49,8 +49,9 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
       const { projectId } = request.params as z.infer<typeof ProjectIdParamSchema>
       const q = request.query as z.infer<typeof ProposalQuerySchema>
-      const userId = (request as any).user?.id
-      const userRole = (request as any).user?.role
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
+      const userRole = req.user?.role
 
       const project = await prisma.project.findUnique({
         where: { id: projectId },
@@ -138,7 +139,8 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
       const { projectId } = request.params as z.infer<typeof ProjectIdParamSchema>
       const body = request.body as z.infer<typeof ProposalCreateSchema>
-      const userId = (request as any).user?.id
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
 
       const project = await prisma.project.findUnique({
         where: { id: projectId },
@@ -219,8 +221,9 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProposalIdSchema>
-      const userId = (request as any).user?.id
-      const userRole = (request as any).user?.role
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
+      const userRole = req.user?.role
 
       const proposal = await prisma.proposal.findUnique({
         where: { id },
@@ -285,8 +288,9 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProposalIdSchema>
       const { decision } = request.body as z.infer<typeof ProposalDecideSchema>
-      const userId = (request as any).user?.id
-      const userRole = (request as any).user?.role
+      const req = request as AuthenticatedRequest
+      const userId = req.user?.id
+      const userRole = req.user?.role
 
       const proposal = await prisma.proposal.findUnique({
         where: { id },
