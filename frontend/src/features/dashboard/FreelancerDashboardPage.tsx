@@ -16,13 +16,35 @@ import { fetchProjects } from '@/features/marketplace/marketplace.service';
 import { fetchMyProfile } from '@/features/profiles/profile.service';
 import styles from './FreelancerDashboardPage.module.css';
 
+type Proposal = {
+  id: string;
+  project_id: string;
+  cover_message: string;
+  proposed_price: number | null;
+  status: string;
+};
+
+type Project = {
+  id: string;
+  title: string;
+  status: string;
+};
+
+type Profile = {
+  headline: string | null;
+  bio: string | null;
+  skills: string[];
+  hourly_rate: number | null;
+  availability: string | null;
+};
+
 export function FreelancerDashboardPage() {
   const [activeTab, setActiveTab] = useState<
     'proposals' | 'projects' | 'milestones' | 'profile'
   >('proposals');
-  const [proposals, setProposals] = useState<any[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [profile, setProfile] = useState<any>(null);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +54,7 @@ export function FreelancerDashboardPage() {
     async function loadData() {
       try {
         const [proposalsData, projectsData, profileData] = await Promise.all([
-          fetchProposals(''), // Get all proposals - we'll need a different endpoint
+          fetchProposals(''),
           fetchProjects({ status: 'published', page_size: 20 }),
           fetchMyProfile(),
         ]);
@@ -40,7 +62,7 @@ export function FreelancerDashboardPage() {
         if (!cancelled) {
           setProposals(proposalsData || []);
           setProjects(projectsData.projects || []);
-          setProfile(profileData);
+          setProfile(profileData as Profile);
         }
       } catch (err) {
         if (!cancelled) {
@@ -115,7 +137,7 @@ export function FreelancerDashboardPage() {
                 </div>
                 {proposals.length > 0 ? (
                   <div className={styles.proposalList}>
-                    {proposals.map((proposal: any) => (
+                    {proposals.map((proposal: Proposal) => (
                       <div key={proposal.id} className={styles.proposalCard}>
                         <div className={styles.proposalCardInfo}>
                           <h4 className={styles.proposalCardTitle}>
@@ -160,7 +182,7 @@ export function FreelancerDashboardPage() {
                 </div>
                 {projects.length > 0 ? (
                   <div className={styles.projectList}>
-                    {projects.map((project: any) => (
+                    {projects.map((project: Project) => (
                       <div key={project.id} className={styles.projectCard}>
                         <div className={styles.projectCardInfo}>
                           <h4 className={styles.projectCardTitle}>
@@ -226,7 +248,7 @@ export function FreelancerDashboardPage() {
                     </p>
                     <p className={styles.profileField}>
                       <strong>Skills:</strong>
-                      {profile.skills?.length ? profile.skills.join(', ') : 'Not set'}
+                      {profile.skills.length ? profile.skills.join(', ') : 'Not set'}
                     </p>
                     <p className={styles.profileField}>
                       <strong>Hourly rate:</strong>
