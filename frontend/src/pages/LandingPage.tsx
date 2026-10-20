@@ -64,15 +64,23 @@ export function LandingPage() {
               proposals.
             </p>
             <div className={styles.heroBenefits} aria-label="What you can expect">
-              <span><Check aria-hidden="true" /> Scope before proposals</span>
-              <span><Check aria-hidden="true" /> Milestones agreed upfront</span>
-              <span><Check aria-hidden="true" /> Work samples over hype</span>
+              <span>
+                <Check aria-hidden="true" /> Scope before proposals
+              </span>
+              <span>
+                <Check aria-hidden="true" /> Milestones agreed upfront
+              </span>
+              <span>
+                <Check aria-hidden="true" /> Work samples over hype
+              </span>
             </div>
           </div>
           <div className={styles.heroImage}>
             <div className={styles.heroCardTopline}>
               <span className={styles.heroCardTag}>A better project brief</span>
-              <span className={styles.heroCardStatus}><span /> Ready to review</span>
+              <span className={styles.heroCardStatus}>
+                <span /> Ready to review
+              </span>
             </div>
             <div className={styles.heroPanel}>
               <FileText className={styles.icon} aria-hidden="true" />
@@ -80,13 +88,22 @@ export function LandingPage() {
               <p>Every project lists deliverables, timeline, and budget before anyone applies.</p>
               <div className={styles.scopeDivider} />
               <div className={styles.scopeRow}>
-                <span><Check aria-hidden="true" /> Defined deliverables</span><b>Included</b>
+                <span>
+                  <Check aria-hidden="true" /> Defined deliverables
+                </span>
+                <b>Included</b>
               </div>
               <div className={styles.scopeRow}>
-                <span><CalendarDays aria-hidden="true" /> Timeline</span><b>Agreed first</b>
+                <span>
+                  <CalendarDays aria-hidden="true" /> Timeline
+                </span>
+                <b>Agreed first</b>
               </div>
               <div className={styles.scopeRow}>
-                <span><Wallet aria-hidden="true" /> Budget</span><b>Visible upfront</b>
+                <span>
+                  <Wallet aria-hidden="true" /> Budget
+                </span>
+                <b>Visible upfront</b>
               </div>
             </div>
             <p className={styles.heroCardFootnote}>Clear expectations make better collaboration.</p>
@@ -137,8 +154,8 @@ export function LandingPage() {
                 The details that keep work clear
               </h2>
               <p className={styles.sectionDesc}>
-                Shared expectations help clients choose confidently and help freelancers decide if
-                a project fits.
+                Shared expectations help clients choose confidently and help freelancers decide if a
+                project fits.
               </p>
             </div>
             <div className={styles.briefGrid}>

@@ -24,8 +24,7 @@ body {
   color: var(--color-ink);
   background:
     radial-gradient(ellipse at 12% 0%, rgba(205, 218, 199, 0.42), transparent 38rem),
-    radial-gradient(ellipse at 91% 16%, rgba(224, 211, 183, 0.34), transparent 34rem),
-    #eeece1;
+    radial-gradient(ellipse at 91% 16%, rgba(224, 211, 183, 0.34), transparent 34rem), #eeece1;
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--text-base-lh);

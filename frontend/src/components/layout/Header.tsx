@@ -23,9 +23,14 @@ export function Header() {
         <Link to="/" className={styles.brand} aria-label="Craftlane home">
           <svg className={styles.brandMark} viewBox="0 0 40 40" aria-hidden="true">
             <rect x="1" y="1" width="38" height="38" rx="13" fill="currentColor" />
-            <path d="M12 26V14h4v4.2c1.1-2.8 3.5-4.5 7.2-4.5 3.6 0 5.8 1.8 5.8 5.3V26h-4v-6.3c0-1.8-1-2.8-2.9-2.8-2.9 0-5.1 2-6.1 5.2V26H12Z" fill="#f8f6ef" />
+            <path
+              d="M12 26V14h4v4.2c1.1-2.8 3.5-4.5 7.2-4.5 3.6 0 5.8 1.8 5.8 5.3V26h-4v-6.3c0-1.8-1-2.8-2.9-2.8-2.9 0-5.1 2-6.1 5.2V26H12Z"
+              fill="#f8f6ef"
+            />
           </svg>
-          <span className={styles.wordmark}>craft<span>lane</span></span>
+          <span className={styles.wordmark}>
+            craft<span>lane</span>
+          </span>
         </Link>
 
         <nav className={cn(styles.nav, isMenuOpen && styles.navOpen)} aria-label="Main navigation">
@@ -83,7 +88,11 @@ export function Header() {
                 <CircleHelp className={styles.mobileLinkIcon} aria-hidden="true" />
                 <span>How it works</span>
               </Link>
-              <Link to="/sign-in" className={styles.mobileLink} onClick={() => setIsMenuOpen(false)}>
+              <Link
+                to="/sign-in"
+                className={styles.mobileLink}
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <LogIn className={styles.mobileLinkIcon} aria-hidden="true" />
                 <span>Sign in</span>
               </Link>

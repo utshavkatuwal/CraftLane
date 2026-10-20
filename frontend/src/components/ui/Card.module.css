@@ -1,10 +1,10 @@
 /* Craftlane — Card styles (CSS Module) */
 
 .card {
-  background: rgba(248,246,239,.76);
-  border: 1px solid rgba(248,246,239,.9);
+  background: rgba(248, 246, 239, 0.76);
+  border: 1px solid rgba(248, 246, 239, 0.9);
   border-radius: 1rem;
-  box-shadow: 0 10px 30px rgba(40,58,47,.055);
+  box-shadow: 0 10px 30px rgba(40, 58, 47, 0.055);
   transition:
     box-shadow var(--transition-fast),
     border-color var(--transition-fast);

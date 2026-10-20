@@ -28,7 +28,9 @@
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   border-radius: 1.35rem;
-  box-shadow: 0 24px 65px rgba(40,58,47,.09), inset 0 1px 0 #f8f6ef;
+  box-shadow:
+    0 24px 65px rgba(40, 58, 47, 0.09),
+    inset 0 1px 0 #f8f6ef;
   padding: clamp(2.25rem, 5vw, 4rem);
   max-width: 42rem;
 }
@@ -59,7 +61,7 @@
 
 .form input:not([type='checkbox']) {
   min-height: 3.5rem;
-  padding-block: .9rem;
+  padding-block: 0.9rem;
   font-size: var(--text-lg);
 }
 
@@ -80,7 +82,7 @@
   width: 1.1rem;
   height: 1.1rem;
   min-height: 1.1rem;
-  margin: .2rem 0 0;
+  margin: 0.2rem 0 0;
   flex-shrink: 0;
   accent-color: var(--color-brand);
 }
