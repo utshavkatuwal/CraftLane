@@ -326,9 +326,11 @@ export default async function projectRoutes(fastify: FastifyInstance) {
   /* Update a project (owner only) */
   fastify.patch(
     '/:id',
-    { preHandler: [authenticate] },
     {
-      preHandler: [validationMiddleware({ params: ProjectIdSchema, body: ProjectUpdateSchema })],
+      preHandler: [
+        authenticate,
+        validationMiddleware({ params: ProjectIdSchema, body: ProjectUpdateSchema }),
+      ],
     },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProjectIdSchema>
@@ -388,9 +390,11 @@ export default async function projectRoutes(fastify: FastifyInstance) {
   /* Close a project (owner only) */
   fastify.post(
     '/:id/close',
-    { preHandler: [authenticate] },
     {
-      preHandler: [validationMiddleware({ params: ProjectIdSchema })],
+      preHandler: [
+        authenticate,
+        validationMiddleware({ params: ProjectIdSchema }),
+      ],
     },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProjectIdSchema>

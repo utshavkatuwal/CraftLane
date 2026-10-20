@@ -113,7 +113,9 @@ export default async function profileRoutes(fastify: FastifyInstance) {
   /* Get a freelancer's public profile */
   fastify.get(
     '/freelancer/:id',
-    validationMiddleware({ params: ProfileIdSchema }),
+    {
+      preHandler: [validationMiddleware({ params: ProfileIdSchema })],
+    },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProfileIdSchema>
 
@@ -159,7 +161,9 @@ export default async function profileRoutes(fastify: FastifyInstance) {
   /* Get a client's public profile */
   fastify.get(
     '/client/:id',
-    validationMiddleware({ params: ProfileIdSchema }),
+    {
+      preHandler: [validationMiddleware({ params: ProfileIdSchema })],
+    },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProfileIdSchema>
 
@@ -188,8 +192,12 @@ export default async function profileRoutes(fastify: FastifyInstance) {
   /* Update own profile */
   fastify.patch(
     '/me',
-    { preHandler: [authenticate] },
-    validationMiddleware({ body: FreelancerProfileUpdateSchema }),
+    {
+      preHandler: [
+        authenticate,
+        validationMiddleware({ body: FreelancerProfileUpdateSchema }),
+      ],
+    },
     async (request, reply) => {
       const userId = (request as any).user?.id
       const body = request.body as z.infer<typeof FreelancerProfileUpdateSchema>

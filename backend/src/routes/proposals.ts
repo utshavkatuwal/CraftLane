@@ -63,8 +63,7 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
 
       // Only the client or admins can see all proposals; freelancers see their own
       let where: Record<string, unknown> = { project_id: projectId }
-      if (userRole !== 'ADMIN' && project.client_id) {
-        // Check if user is the client
+      if (userRole !== 'ADMIN') {
         const clientProfile = await prisma.clientProfile.findUnique({
           where: { user_id: userId },
           select: { id: true },
@@ -130,11 +129,11 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/projects/:projectId/proposals',
     {
-      preHandler: [authenticate, authorize(['FREELANCER', 'ADMIN'])],
-      validationMiddleware: {
-        params: ProjectIdParamSchema,
-        body: ProposalCreateSchema,
-      },
+      preHandler: [
+        authenticate,
+        authorize(['FREELANCER', 'ADMIN']),
+        validationMiddleware({ params: ProjectIdParamSchema, body: ProposalCreateSchema }),
+      ],
     },
     async (request, reply) => {
       const { projectId } = request.params as z.infer<typeof ProjectIdParamSchema>
@@ -212,8 +211,12 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
   /* Get a single proposal */
   fastify.get(
     '/:id',
-    { preHandler: [authenticate] },
-    validationMiddleware({ params: ProposalIdSchema }),
+    {
+      preHandler: [
+        authenticate,
+        validationMiddleware({ params: ProposalIdSchema }),
+      ],
+    },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProposalIdSchema>
       const userId = (request as any).user?.id
@@ -273,13 +276,17 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/:id/decide',
     {
-      preHandler: [authenticate, authorize(['CLIENT', 'ADMIN'])],
-      validationMiddleware: { params: ProposalIdSchema, body: ProposalDecideSchema },
+      preHandler: [
+        authenticate,
+        authorize(['CLIENT', 'ADMIN']),
+        validationMiddleware({ params: ProposalIdSchema, body: ProposalDecideSchema }),
+      ],
     },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProposalIdSchema>
       const { decision } = request.body as z.infer<typeof ProposalDecideSchema>
       const userId = (request as any).user?.id
+      const userRole = (request as any).user?.role
 
       const proposal = await prisma.proposal.findUnique({
         where: { id },
