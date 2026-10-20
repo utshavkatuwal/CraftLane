@@ -1,4 +1,3 @@
-import { execSync } from 'child_process'
 import { PrismaClient } from '@prisma/client'
 
 /* Craftlane — Test database setup

@@ -16,7 +16,7 @@ export default async function healthRoutes(fastify: FastifyInstance) {
     try {
       await prisma.$queryRaw`SELECT 1`
       return reply.status(200).send({ status: 'ok', database: 'connected' })
-    } catch (_err) {
+    } catch {
       return reply.status(503).send({ status: 'error', database: 'disconnected' })
     }
   })

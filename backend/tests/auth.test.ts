@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { PrismaClient } from '@prisma/client'
+import type { PrismaClient } from '@prisma/client'
 import {
   signup,
-  signin,
   SignupSchema,
   SigninSchema,
 } from '@/services/auth.service'

@@ -121,7 +121,7 @@ export async function signin(data: z.infer<typeof SigninSchema>) {
   }
 
   if (user.status === 'SUSPENDED' || user.status === 'DEACTIVATED') {
-    const err: any = new Error('Account is not active')
+    const err = new Error('Account is not active')
     err.statusCode = 403
     throw err
   }
@@ -133,7 +133,7 @@ export async function signin(data: z.infer<typeof SigninSchema>) {
   const prefix = rawToken.slice(0, 12)
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
-  const session = await prisma.session.create({
+  await prisma.session.create({
     data: {
       user_id: user.id,
       token_prefix: prefix,
@@ -167,7 +167,7 @@ export async function signout(sessionId: string) {
 export async function getMe(userId: string) {
   const user = await findUserById(userId)
   if (!user) {
-    const err: any = new Error('User not found')
+    const err = new Error('User not found')
     err.statusCode = 404
     throw err
   }
@@ -228,14 +228,14 @@ export async function resetPassword(data: z.infer<typeof ResetPasswordSchema>) {
   })
 
   if (!tokenRecord || !(await verify(tokenRecord.token_hash, data.token))) {
-    const err: any = new Error('Invalid or expired reset token')
+    const err = new Error('Invalid or expired reset token')
     err.statusCode = 400
     throw err
   }
 
   const user = await findUserById(tokenRecord.user_id)
   if (!user) {
-    const err: any = new Error('User not found')
+    const err = new Error('User not found')
     err.statusCode = 404
     throw err
   }
@@ -269,7 +269,7 @@ export async function verifyEmail(data: z.infer<typeof VerifyEmailSchema>) {
   })
 
   if (!tokenRecord || !(await verify(tokenRecord.token_hash, data.token))) {
-    const err: any = new Error('Invalid or expired verification token')
+    const err = new Error('Invalid or expired verification token')
     err.statusCode = 400
     throw err
   }

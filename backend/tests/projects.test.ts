@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
-import { PrismaClient } from '@prisma/client'
+import { describe, it, expect } from 'vitest'
 import { ProjectCreateSchema, ProjectQuerySchema } from '@/routes/projects'
 
 /* Craftlane — Project route validation tests
