@@ -1,5 +1,6 @@
 import type { FastifyRequest, FastifyReply, HookHandlerDoneFunction } from 'fastify';
-import type { ZodSchema, ZodError } from 'zod';
+import type { ZodSchema } from 'zod'
+import { ZodError } from 'zod';
 
 /* Craftlane — Zod validation middleware
  *

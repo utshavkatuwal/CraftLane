@@ -30,7 +30,7 @@ function tokenPrefix(token: string): string {
   return token.slice(0, 12);
 }
 
-export const authenticate: (
+const authenticate: (
   request: AuthenticatedRequest,
   reply: FastifyReply
 ) => Promise<void | undefined> = async (request, reply) => {
@@ -105,7 +105,7 @@ export const authenticate: (
 
 /* Role-based authorization middleware factory.
  * Only allows requests from users with the specified roles. */
-export function authorize(allowedRoles: string[]) {
+function authorize(allowedRoles: string[]) {
   return (request: AuthenticatedRequest, reply: FastifyReply) => {
     if (!request.user) {
       reply.status(401).send({
