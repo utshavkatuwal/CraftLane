@@ -1,0 +1,25 @@
+/* Craftlane — ErrorMessage styles (CSS Module) */
+
+.errorMessage {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.title {
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-lg);
+  color: var(--color-ink);
+}
+
+.message {
+  margin: 0 0 var(--space-4) 0;
+  color: var(--color-body);
+  max-width: var(--container-narrow);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.retry {
+  display: flex;
+  justify-content: center;
+}

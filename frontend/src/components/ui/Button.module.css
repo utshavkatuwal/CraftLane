@@ -1,0 +1,150 @@
+/* Craftlane — Button styles (CSS Module) */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-medium);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.button:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+  box-shadow: var(--focus-ring);
+}
+
+.button:disabled,
+.button[aria-busy='true'] {
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.button:not(:disabled):hover:not(:focus-visible) {
+  filter: saturate(1.05);
+}
+
+/* Label keeps text stable while a spinner/icon swaps in. */
+.label {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Variants */
+.primary {
+  background-color: var(--color-brand);
+  color: var(--color-brand-text);
+  box-shadow: var(--shadow-sm);
+}
+.primary:not(:disabled):hover,
+.primary:not(:disabled):focus-visible {
+  background-color: var(--color-brand-hover);
+}
+.primary:not(:disabled):active {
+  background-color: var(--color-brand-active);
+}
+
+.outline {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-border);
+}
+.outline:not(:disabled):hover {
+  background-color: var(--color-surface-elevated);
+  border-color: var(--color-border-strong);
+}
+.outline:not(:disabled):focus-visible {
+  background-color: var(--color-surface-elevated);
+  border-color: var(--color-border-focus);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--color-body);
+}
+.ghost:not(:disabled):hover {
+  background-color: var(--color-surface-elevated);
+  color: var(--color-ink);
+}
+.ghost:not(:disabled):focus-visible {
+  background-color: var(--color-surface-elevated);
+  border-color: var(--color-border-focus);
+}
+
+.danger {
+  background-color: var(--color-danger);
+  color: var(--color-brand-text);
+}
+.danger:not(:disabled):hover {
+  background-color: var(--color-danger-hover);
+}
+.danger:not(:disabled):focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-brand);
+  text-decoration: underline;
+}
+.link:not(:disabled):hover {
+  color: var(--color-brand-hover);
+  text-decoration: none;
+}
+.link:not(:disabled):focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Sizes */
+.sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-sm);
+}
+.md {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  border-radius: var(--radius);
+}
+.lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-md);
+}
+
+/* Loading spinner */
+.spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

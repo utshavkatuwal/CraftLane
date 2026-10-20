@@ -1,0 +1,26 @@
+/* Craftlane — FormField styles (CSS Module) */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.errorText {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  line-height: var(--text-sm-lh);
+}
+
+.helperText {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  line-height: var(--text-sm-lh);
+}

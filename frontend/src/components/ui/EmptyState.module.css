@@ -1,0 +1,46 @@
+/* Craftlane — EmptyState styles (CSS Module) */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-16) var(--space-4);
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-elevated);
+  border: var(--border-width) solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted-soft);
+  margin-bottom: var(--space-6);
+}
+
+.icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.title {
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-xl);
+  color: var(--color-ink);
+}
+
+.description {
+  margin: 0 0 var(--space-6) 0;
+  color: var(--color-muted);
+  max-width: var(--container-narrow);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.action {
+  display: flex;
+  justify-content: center;
+}

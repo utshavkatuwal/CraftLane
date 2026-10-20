@@ -1,0 +1,172 @@
+/* Craftlane — Header styles (CSS Module) */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-surface);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height);
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.brandAccent {
+  color: var(--color-brand);
+}
+
+.nav {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.navLink {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-body);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.navLink:hover {
+  color: var(--color-ink);
+  background-color: var(--color-surface-elevated);
+}
+
+.navLink:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+  background-color: var(--color-surface-elevated);
+}
+
+.navLinkCta {
+  background-color: var(--color-brand);
+  color: var(--color-brand-text);
+}
+.navLinkCta:hover {
+  background-color: var(--color-brand-hover);
+  color: var(--color-brand-text);
+}
+
+/* Desktop only */
+@media (min-width: 1024px) {
+  .nav {
+    display: flex;
+  }
+  .menuButton {
+    display: none;
+  }
+}
+
+/* Mobile */
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  margin-left: var(--space-2);
+  color: var(--color-body);
+  background: transparent;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.menuButton:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.menuLabel {
+  display: none;
+}
+
+.mobilePanel {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border-bottom: var(--border-width) solid var(--color-border);
+  transform: translateX(-100%);
+  transition: transform var(--transition-base);
+  width: 72vw;
+  max-width: 280px;
+  padding: calc(var(--header-height-mobile) + var(--space-6)) var(--space-4) var(--space-4);
+}
+
+.mobilePanelOpen {
+  transform: translateX(0);
+}
+
+.mobileLink {
+  display: block;
+  padding: var(--space-4);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-body);
+  text-decoration: none;
+  border-bottom: var(--border-width) solid rgba(0, 0, 0, 0.04);
+}
+.mobileLink:hover {
+  background-color: var(--color-surface-elevated);
+  color: var(--color-ink);
+}
+.mobileLinkCta {
+  background-color: var(--color-brand);
+  color: var(--color-brand-text);
+  text-align: center;
+  border: none;
+  border-radius: var(--radius);
+}
+.mobileLinkCta:hover {
+  background-color: var(--color-brand-hover);
+}
+
+.skipLink {
+  position: absolute;
+  left: var(--space-8);
+  top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-brand);
+  color: var(--color-brand-text);
+  border-radius: var(--radius);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transform: translateY(-100%);
+  transition: transform var(--transition-fast);
+}
+.skipLink:focus {
+  transform: translateY(0);
+  outline: none;
+}
