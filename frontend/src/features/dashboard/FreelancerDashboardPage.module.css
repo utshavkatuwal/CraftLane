@@ -4,10 +4,20 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  max-width: var(--container-max);
+  width: calc(100% - 2rem);
+  margin: 2rem auto;
+  padding: 0 clamp(1rem, 3vw, 2rem) 2rem;
+  border: 1px solid rgba(248,246,239,.82);
+  border-radius: 1.4rem;
+  background: linear-gradient(145deg, rgba(248,246,239,.78), rgba(247,249,243,.58));
+  backdrop-filter: blur(24px) saturate(1.12);
+  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  box-shadow: 0 24px 70px rgba(40,58,47,.09), inset 0 1px 0 rgba(248,246,239,.9);
 }
 
 .header {
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-8) 0;
   border-bottom: var(--border-width) solid var(--color-border);
 }
 
@@ -31,7 +41,7 @@
 }
 
 .body {
-  display: flex;
+  display: block;
   flex: 1;
   min-height: 0;
 }
@@ -41,7 +51,7 @@
   border-bottom: var(--border-width) solid var(--color-border);
   flex-shrink: 0;
   overflow-x: auto;
-  padding: 0 var(--space-4);
+  padding: 0;
 }
 
 .tab {
@@ -71,7 +81,7 @@
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-8) 0;
 }
 
 .section {

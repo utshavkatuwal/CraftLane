@@ -1,10 +1,10 @@
 /* Craftlane — Card styles (CSS Module) */
 
 .card {
-  background-color: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  background: rgba(248,246,239,.76);
+  border: 1px solid rgba(248,246,239,.9);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(40,58,47,.055);
   transition:
     box-shadow var(--transition-fast),
     border-color var(--transition-fast);

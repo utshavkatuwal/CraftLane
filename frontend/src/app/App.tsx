@@ -8,13 +8,16 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
 import Providers from './providers';
 import { Loader } from '@/components/ui/Loader';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 export function App() {
   return (
     <Providers>
-      <Suspense fallback={<Loader />}>
-        <RouterProvider router={router} />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<Loader />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </ErrorBoundary>
     </Providers>
   );
 }

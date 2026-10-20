@@ -61,7 +61,7 @@ export function SignInPage() {
     <div className={styles.page}>
       <Header />
       <main id="content" className={styles.main}>
-        <Page narrow>
+        <Page className={styles.cardWrapper}>
           <div className={styles.card}>
             <div className={styles.header}>
               <h2 className={styles.title}>Sign in</h2>

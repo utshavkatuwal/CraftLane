@@ -5,6 +5,12 @@
 
 @import './tokens.css';
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   line-height: 1.5;
   /* Prevent font size inflation on mobile orientation changes. */
@@ -16,7 +22,10 @@ html {
 body {
   margin: 0;
   color: var(--color-ink);
-  background: var(--color-surface);
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(205, 218, 199, 0.42), transparent 38rem),
+    radial-gradient(ellipse at 91% 16%, rgba(224, 211, 183, 0.34), transparent 34rem),
+    #eeece1;
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--text-base-lh);
@@ -75,7 +84,7 @@ a {
 }
 a:hover {
   color: var(--color-brand-hover);
-  text-decoration: underline;
+  text-decoration: none;
 }
 a:focus-visible {
   outline: var(--focus-outline);

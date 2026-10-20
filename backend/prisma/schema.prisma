@@ -1,0 +1,397 @@
+// Craftlane — Prisma Schema
+// Primary database: PostgreSQL
+// This schema defines the complete data model for the Craftlane marketplace.
+//
+// Design decisions:
+// - UUID primary keys for all tables (opaque, safe to expose in APIs)
+// - `created_at` / `updated_at` timestamps on every entity
+// - Money stored as integer minor units (cents) — never floating point
+// - Explicit foreign keys with ON DELETE CASCADE only where safe
+// - Unique constraints on business identifiers (email, slug)
+// - Indexes on foreign keys and common filter/sort columns
+// - Role-based authorization enforced at the application layer
+// - No default admin user — admin roles must be explicitly assigned
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/* ------------------------------------------------------------------ */
+/* Authentication & accounts                                          */
+/* ------------------------------------------------------------------ */
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique @db.VarChar(255)
+  password_hash String @db.VarChar(255)
+  full_name String   @db.VarChar(255)
+  role      UserRole @default(CLIENT)
+  status    UserStatus @default(PENDING)
+  email_verified Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  freelancer_profile FreelancerProfile?
+  client_profile     ClientProfile?
+  proposals          Proposal[]
+  contracts_as_client Contract[] @relation("ClientContracts")
+  contracts_as_freelancer Contract[] @relation("FreelancerContracts")
+
+  @@index([email])
+  @@index([status])
+  @@index([role])
+}
+
+/* Authentication tokens (password reset, email verification) */
+model AuthToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  user_id   String   @db.Uuid
+  token_hash String  @unique @db.VarChar(255)
+  type      AuthTokenType
+  expires_at DateTime
+  used_at    DateTime?
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token_hash])
+  @@index([type, expires_at])
+}
+
+/* Sessions for authenticated users */
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  user_id      String   @db.Uuid
+  token_prefix String   @db.VarChar(12) // First 12 chars of token, for lookup
+  token_hash   String   @unique @db.VarChar(255)
+  expires_at   DateTime
+  created_at   DateTime @default(now())
+  last_used_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token_prefix])
+  @@index([token_hash])
+  @@index([expires_at])
+}
+
+/* ------------------------------------------------------------------ */
+/* Profiles                                                           */
+/* ------------------------------------------------------------------ */
+model FreelancerProfile {
+  id            String   @id @default(uuid()) @db.Uuid
+  user_id       String   @unique @db.Uuid
+  headline      String?  @db.VarChar(255)
+  bio           String?  @db.Text
+  location      String?  @db.VarChar(255)
+  hourly_rate_cents Int?   // Stored in minor units (cents)
+  currency      String?  @default("USD") @db.VarChar(3)
+  availability  Availability @default(AVAILABLE)
+  is_public     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  skills        ProfileSkill[]
+  portfolio     PortfolioItem[]
+
+  @@index([user_id])
+  @@index([availability])
+  @@index([is_public])
+}
+
+model ClientProfile {
+  id            String   @id @default(uuid()) @db.Uuid
+  user_id       String   @unique @db.Uuid
+  organization  String?  @db.VarChar(255)
+  bio           String?  @db.Text
+  location      String?  @db.VarChar(255)
+  is_public     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  projects      Project[]
+  contracts     Contract[] @relation("ClientContracts")
+
+  @@index([user_id])
+  @@index([is_public])
+}
+
+/* ------------------------------------------------------------------ */
+/* Skills                                                             */
+/* ------------------------------------------------------------------ */
+model Skill {
+  id   String   @id @default(uuid()) @db.Uuid
+  name String   @unique @db.VarChar(100)
+  slug String   @unique @db.VarChar(100)
+  created_at DateTime @default(now())
+
+  project_skills ProjectSkill[]
+  profile_skills ProfileSkill[]
+
+  @@index([slug])
+}
+
+/* Junction: freelancer profile ↔ skills */
+model ProfileSkill {
+  id        String   @id @default(uuid()) @db.Uuid
+  profile_id String  @db.Uuid
+  skill_id   String  @db.Uuid
+
+  profile   FreelancerProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+  skill     Skill             @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+
+  @@unique([profile_id, skill_id])
+  @@index([profile_id])
+  @@index([skill_id])
+}
+
+/* Junction: project ↔ skills */
+model ProjectSkill {
+  id        String   @id @default(uuid()) @db.Uuid
+  project_id String  @db.Uuid
+  skill_id   String  @db.Uuid
+
+  project   Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  skill     Skill     @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, skill_id])
+  @@index([project_id])
+  @@index([skill_id])
+}
+
+/* ------------------------------------------------------------------ */
+/* Portfolio                                                          */
+/* ------------------------------------------------------------------ */
+model PortfolioItem {
+  id            String   @id @default(uuid()) @db.Uuid
+  profile_id    String   @db.Uuid
+  title         String   @db.VarChar(255)
+  description   String?  @db.Text
+  url           String?  @db.VarChar(500)
+  thumbnail_url String?  @db.VarChar(500)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  profile FreelancerProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  @@index([profile_id])
+  @@index([created_at])
+}
+
+/* ------------------------------------------------------------------ */
+/* Projects                                                           */
+/* ------------------------------------------------------------------ */
+model Project {
+  id            String          @id @default(uuid()) @db.Uuid
+  client_id     String          @db.Uuid
+  title         String          @db.VarChar(255)
+  description   String          @db.Text
+  status        ProjectStatus   @default(DRAFT)
+  project_type  ProjectType     @default(FIXED_PRICE)
+  budget_min_cents Int?          // Stored in minor units (cents)
+  budget_max_cents Int?          // Stored in minor units (cents)
+  currency      String?         @default("USD") @db.VarChar(3)
+  deadline      DateTime?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+
+  client  ClientProfile @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  skills  ProjectSkill[]
+  proposals Proposal[]
+  contracts Contract[] @relation("ProjectContracts")
+
+  @@index([client_id])
+  @@index([status])
+  @@index([project_type])
+  @@index([created_at])
+  @@index([deadline])
+}
+
+/* ------------------------------------------------------------------ */
+/* Proposals                                                          */
+/* ------------------------------------------------------------------ */
+model Proposal {
+  id               String         @id @default(uuid()) @db.Uuid
+  project_id       String         @db.Uuid
+  freelancer_id    String         @db.Uuid
+  cover_message    String         @db.Text
+  proposed_price_cents Int?       // Stored in minor units (cents)
+  proposed_timeline String?      @db.VarChar(255)
+  status           ProposalStatus @default(SUBMITTED)
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+
+  project  Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  freelancer User    @relation(fields: [freelancer_id], references: [id], onDelete: Cascade)
+
+  @@index([project_id])
+  @@index([freelancer_id])
+  @@index([status])
+  @@unique([project_id, freelancer_id]) // One proposal per freelancer per project
+}
+
+/* ------------------------------------------------------------------ */
+/* Contracts                                                          */
+/* ------------------------------------------------------------------ */
+model Contract {
+  id               String   @id @default(uuid()) @db.Uuid
+  project_id       String   @db.Uuid
+  client_id        String   @db.Uuid
+  freelancer_id    String   @db.Uuid
+  agreed_price_cents Int      // Stored in minor units (cents)
+  currency         String   @default("USD") @db.VarChar(3)
+  status           ContractStatus @default(PENDING_ACCEPTANCE)
+  terms            String?  @db.Text
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  project   Project               @relation(fields: [project_id], references: [id], onDelete: Cascade, name: "ProjectContracts")
+  client  ClientProfile           @relation(fields: [client_id], references: [id], onDelete: Cascade, name: "ClientContracts")
+  freelancer User                @relation(fields: [freelancer_id], references: [id], onDelete: Cascade, name: "FreelancerContracts")
+  milestones Milestone[]
+
+  @@index([project_id])
+  @@index([client_id])
+  @@index([freelancer_id])
+  @@index([status])
+}
+
+/* ------------------------------------------------------------------ */
+/* Milestones                                                         */
+/* ------------------------------------------------------------------ */
+model Milestone {
+  id            String   @id @default(uuid()) @db.Uuid
+  contract_id   String   @db.Uuid
+  title         String   @db.VarChar(255)
+  description   String?  @db.Text
+  amount_cents  Int?     // Stored in minor units (cents)
+  currency      String?  @default("USD") @db.VarChar(3)
+  due_date      DateTime?
+  status        MilestoneStatus @default(PENDING)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  contract Contract @relation(fields: [contract_id], references: [id], onDelete: Cascade)
+
+  @@index([contract_id])
+  @@index([status])
+  @@index([due_date])
+}
+
+/* ------------------------------------------------------------------ */
+/* Moderation & audit                                                 */
+/* ------------------------------------------------------------------ */
+model Report {
+  id          String   @id @default(uuid()) @db.Uuid
+  reporter_id String?  @db.Uuid
+  target_type String   @db.VarChar(50) // 'user', 'project', 'profile', 'proposal'
+  target_id   String   @db.Uuid
+  reason      String   @db.Text
+  status      ReportStatus @default(PENDING)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([reporter_id])
+  @@index([target_type, target_id])
+  @@index([status])
+}
+
+model AuditEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  actor_id  String?  @db.Uuid
+  action    String   @db.VarChar(100)
+  entity_type String  @db.VarChar(50)
+  entity_id String   @db.Uuid
+  metadata  Json?
+  created_at DateTime @default(now())
+
+  @@index([actor_id])
+  @@index([action])
+  @@index([entity_type, entity_id])
+  @@index([created_at])
+}
+
+/* ------------------------------------------------------------------ */
+/* Enums                                                              */
+/* ------------------------------------------------------------------ */
+enum UserRole {
+  CLIENT
+  FREELANCER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+enum AuthTokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+enum Availability {
+  AVAILABLE
+  BUSY
+  UNAVAILABLE
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  PAUSED
+  CLOSED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectType {
+  FIXED_PRICE
+  HOURLY
+}
+
+enum ProposalStatus {
+  SUBMITTED
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum ContractStatus {
+  PENDING_ACCEPTANCE
+  ACTIVE
+  SUBMITTED_FOR_REVIEW
+  REVISION_REQUESTED
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED
+  REVISION_REQUESTED
+  APPROVED
+  CANCELLED
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}

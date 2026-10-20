@@ -4,7 +4,22 @@
  */
 
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Users, Clock, ShieldCheck } from 'lucide-react';
+import {
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Compass,
+  FileText,
+  Users,
+  Clock,
+  ShieldCheck,
+  Check,
+  CalendarDays,
+  Wallet,
+  Target,
+  ListChecks,
+  MessageSquareText,
+  CircleDollarSign,
+} from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
 import { Header } from '@/components/layout/Header';
@@ -48,13 +63,33 @@ export function LandingPage() {
               No account is required to browse. Signing in lets you post projects or submit
               proposals.
             </p>
+            <div className={styles.heroBenefits} aria-label="What you can expect">
+              <span><Check aria-hidden="true" /> Scope before proposals</span>
+              <span><Check aria-hidden="true" /> Milestones agreed upfront</span>
+              <span><Check aria-hidden="true" /> Work samples over hype</span>
+            </div>
           </div>
           <div className={styles.heroImage}>
+            <div className={styles.heroCardTopline}>
+              <span className={styles.heroCardTag}>A better project brief</span>
+              <span className={styles.heroCardStatus}><span /> Ready to review</span>
+            </div>
             <div className={styles.heroPanel}>
               <FileText className={styles.icon} aria-hidden="true" />
               <h3>Transparent scopes</h3>
               <p>Every project lists deliverables, timeline, and budget before anyone applies.</p>
+              <div className={styles.scopeDivider} />
+              <div className={styles.scopeRow}>
+                <span><Check aria-hidden="true" /> Defined deliverables</span><b>Included</b>
+              </div>
+              <div className={styles.scopeRow}>
+                <span><CalendarDays aria-hidden="true" /> Timeline</span><b>Agreed first</b>
+              </div>
+              <div className={styles.scopeRow}>
+                <span><Wallet aria-hidden="true" /> Budget</span><b>Visible upfront</b>
+              </div>
             </div>
+            <p className={styles.heroCardFootnote}>Clear expectations make better collaboration.</p>
           </div>
         </section>
 
@@ -94,7 +129,54 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className={cn(styles.section, styles.sectionAlt)}>
+        <section className={cn(styles.section, styles.sectionAlt)} aria-labelledby="brief-title">
+          <div className={styles.container}>
+            <div className={styles.sectionHeader}>
+              <p className={styles.eyebrow}>A useful brief, from day one</p>
+              <h2 className={styles.sectionTitle} id="brief-title">
+                The details that keep work clear
+              </h2>
+              <p className={styles.sectionDesc}>
+                Shared expectations help clients choose confidently and help freelancers decide if
+                a project fits.
+              </p>
+            </div>
+            <div className={styles.briefGrid}>
+              {[
+                {
+                  icon: Target,
+                  title: 'A clear outcome',
+                  body: 'Describe the result you need and the problem the work should solve.',
+                },
+                {
+                  icon: ListChecks,
+                  title: 'Defined deliverables',
+                  body: 'List the files, features, or other completed work everyone can review.',
+                },
+                {
+                  icon: CircleDollarSign,
+                  title: 'Budget and timing',
+                  body: 'Share the expected budget and schedule before proposals come in.',
+                },
+                {
+                  icon: MessageSquareText,
+                  title: 'Room to clarify',
+                  body: 'Discuss requirements and align on milestones before work begins.',
+                },
+              ].map(({ icon: Icon, title, body }) => (
+                <article className={styles.briefCard} key={title}>
+                  <div className={styles.briefIcon}>
+                    <Icon aria-hidden="true" />
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.section}>
           <div className={styles.container}>
             <div className={styles.twoColumn}>
               <div>
@@ -130,6 +212,83 @@ export function LandingPage() {
                   marketplace activity.
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="audience-title">
+          <div className={styles.container}>
+            <div className={styles.audienceHeader}>
+              <p className={styles.eyebrow}>One platform, two perspectives</p>
+              <h2 className={styles.sectionTitle} id="audience-title">
+                A clearer start for everyone
+              </h2>
+              <p className={styles.sectionDesc}>
+                Good work starts when both sides understand what is expected.
+              </p>
+            </div>
+            <div className={styles.audienceGrid}>
+              <article className={styles.audienceCard}>
+                <div className={styles.audienceIcon}>
+                  <BriefcaseBusiness aria-hidden="true" />
+                </div>
+                <p className={styles.audienceLabel}>For clients</p>
+                <h3 className={styles.audienceTitle}>Get aligned before work begins</h3>
+                <p className={styles.audienceBody}>
+                  Describe the outcome, set a budget and timeline, then compare proposals against
+                  the same brief.
+                </p>
+                <Link to="/sign-up" className={styles.audienceLink}>
+                  Get started <ArrowUpRight aria-hidden="true" />
+                </Link>
+              </article>
+              <article className={styles.audienceCard}>
+                <div className={styles.audienceIcon}>
+                  <Compass aria-hidden="true" />
+                </div>
+                <p className={styles.audienceLabel}>For freelancers</p>
+                <h3 className={styles.audienceTitle}>Choose work with clear terms</h3>
+                <p className={styles.audienceBody}>
+                  Review project requirements up front and show relevant experience when you apply.
+                </p>
+                <Link to="/work" className={styles.audienceLink}>
+                  Explore projects <ArrowUpRight aria-hidden="true" />
+                </Link>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className={cn(styles.section, styles.faqSection)} aria-labelledby="faq-title">
+          <div className={cn(styles.container, styles.faqLayout)}>
+            <div className={styles.faqIntro}>
+              <p className={styles.eyebrow}>A few basics</p>
+              <h2 className={styles.sectionTitle} id="faq-title">
+                Before you get started
+              </h2>
+              <p className={styles.sectionDesc}>
+                A quick overview of browsing, project briefs, and the current preview.
+              </p>
+            </div>
+            <div className={styles.faqList}>
+              <details className={styles.faqItem}>
+                <summary>Can I browse projects without an account?</summary>
+                <p>You can explore published project listings from Find work without signing in.</p>
+              </details>
+              <details className={styles.faqItem}>
+                <summary>What makes a useful project brief?</summary>
+                <p>
+                  A clear outcome, deliverables, required skills, budget, and timeline help
+                  freelancers understand what the work involves.
+                </p>
+              </details>
+              <details className={styles.faqItem}>
+                <summary>Are account and project actions live?</summary>
+                <p>
+                  Craftlane is an early development preview. Account and project interactions are
+                  not connected to a backend yet.
+                </p>
+              </details>
             </div>
           </div>
         </section>

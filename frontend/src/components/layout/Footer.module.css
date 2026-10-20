@@ -25,16 +25,26 @@
 .brandLink {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-bold);
+  gap: .6rem;
   color: var(--color-ink);
   text-decoration: none;
 }
 
-.brandAccent {
+.brandMark {
+  width: 2rem;
+  height: 2rem;
   color: var(--color-brand);
 }
+
+.wordmark {
+  font-size: 1.22rem;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -.055em;
+  color: #24332b;
+}
+
+.wordmark span { color: var(--color-brand); }
 
 .tagline {
   margin: 0;
