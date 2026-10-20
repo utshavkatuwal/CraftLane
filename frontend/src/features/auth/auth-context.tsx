@@ -19,7 +19,6 @@ import {
   signin as signinService,
   signup as signupService,
   getMe as getMeService,
-  signout as signoutService,
 } from '@/features/auth/auth.service'
 import type { SignUpForm, SignInForm, User } from '@/types'
 
