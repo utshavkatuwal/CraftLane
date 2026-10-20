@@ -132,3 +132,6 @@ async function verifyTokenHash(
   const { verify } = await import('argon2')
   return verify(hashValue, token)
 }
+
+export { authenticate, authorize }
+export type { AuthenticatedRequest }
