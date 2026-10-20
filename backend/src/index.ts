@@ -53,16 +53,18 @@ export function buildApp() {
   app.setErrorHandler((error, _, reply) => {
     app.log.error(error)
 
-    if (error.statusCode) {
-      return reply.status(error.statusCode).send({
-        error: error.name,
-        message: error.message,
+    const err = error as Error & { statusCode?: number }
+    if (err.statusCode) {
+      return reply.status(err.statusCode).send({
+        error: err.name,
+        message: err.message,
       })
     }
 
     return reply.status(500).send({
       error: 'internal_server_error',
-      message: process.env.NODE_ENV === 'development' ? error.message : 'An unexpected error occurred',
+      message:
+        process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred',
     })
   })
 

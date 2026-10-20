@@ -32,7 +32,7 @@ export function signToken(
   payload: Record<string, unknown>,
   options: SignOptions = {},
 ): string {
-  return sign(payload, JWT_SECRET, {
+  return sign(payload, JWT_SECRET!, {
     algorithm: 'HS256',
     ...options,
   })
@@ -43,7 +43,7 @@ export function verifyToken<T = Record<string, unknown>>(
   token: string,
   options: VerifyOptions = {},
 ): T {
-  return jwtVerify(token, JWT_SECRET, {
+  return jwtVerify(token, JWT_SECRET!, {
     algorithms: ['HS256'],
     ...options,
   }) as T

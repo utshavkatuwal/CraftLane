@@ -38,8 +38,9 @@ model User {
   freelancer_profile FreelancerProfile?
   client_profile     ClientProfile?
   proposals          Proposal[]
-  contracts_as_client Contract[] @relation("ClientContracts")
   contracts_as_freelancer Contract[] @relation("FreelancerContracts")
+  auth_tokens        AuthToken[]
+  sessions           Session[]
 
   @@index([email])
   @@index([status])

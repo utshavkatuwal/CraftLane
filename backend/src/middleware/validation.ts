@@ -73,3 +73,4 @@ const validationMiddleware: FastifyPluginAsync<ValidationSchemas> = async (
 }
 
 export default validationMiddleware
+export { validationMiddleware }

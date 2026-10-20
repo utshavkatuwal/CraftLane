@@ -246,12 +246,34 @@ export default async function projectRoutes(fastify: FastifyInstance) {
         })
       }
 
+      // Get or create skills and build skill connects
+      const skillConnects: { skill: { connect: { id: string } } }[] = []
+      if (body.skills?.length) {
+        for (const skillName of body.skills) {
+          let skill = await prisma.skill.findUnique({
+            where: { name: skillName },
+          })
+          if (!skill) {
+            skill = await prisma.skill.create({
+              data: {
+                name: skillName,
+                slug: skillName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+              },
+            })
+          }
+          skillConnects.push({ skill: { connect: { id: skill.id } } })
+        }
+      }
+
       const project = await prisma.project.create({
         data: {
           client_id: clientProfile.id,
           title: body.title,
           description: body.description,
-          project_type: body.project_type,
+          project_type:
+            body.project_type === 'hourly'
+              ? 'HOURLY'
+              : ('FIXED_PRICE' as const),
           budget_min_cents: body.budget_min
             ? Math.round(body.budget_min * 100)
             : null,
@@ -261,25 +283,7 @@ export default async function projectRoutes(fastify: FastifyInstance) {
           currency: body.currency,
           deadline: body.deadline ? new Date(body.deadline) : null,
           status: 'PUBLISHED',
-          skills: body.skills?.length
-            ? {
-                create: body.skills.map(async (skillName) => {
-                  // Get or create skill
-                  let skill = await prisma.skill.findUnique({
-                    where: { name: skillName },
-                  })
-                  if (!skill) {
-                    skill = await prisma.skill.create({
-                      data: {
-                        name: skillName,
-                        slug: skillName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-                      },
-                    })
-                  }
-                  return { skill_id: skill.id }
-                }),
-              }
-            : undefined,
+          skills: skillConnects.length > 0 ? { create: skillConnects } : undefined,
         },
         include: {
           skills: { include: { skill: true } },
