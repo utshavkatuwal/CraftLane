@@ -3,29 +3,19 @@
 // components that use useNavigate/useParams/useAuth work in tests.
 import type { RenderOptions } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import type { ReactElement } from 'react';
-import type { ComponentType } from 'react';
+import type { ReactElement, ReactNode, ComponentType } from 'react';
 
 import { render as rtlRender, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AuthProvider } from '@/features/auth/auth-context';
 
-const customRender = (
-  ui: ReactElement,
-  options?: RenderOptions,
-) => {
-  return rtlRender(
-    ui,
-    {
-      wrapper: (Component: ComponentType) => (
-        <MemoryRouter>
-          <AuthProvider>
-            <Component />
-          </AuthProvider>
-        </MemoryRouter>
-      ),
-      ...options,
-    },
-  );
-}
+const Wrapper: ComponentType<{ children: ReactNode }> = ({ children }) => (
+  <MemoryRouter>
+    <AuthProvider>{children}</AuthProvider>
+  </MemoryRouter>
+);
+
+const customRender = (ui: ReactElement, options?: RenderOptions) => {
+  return rtlRender(ui, { wrapper: Wrapper, ...options });
+};
 
 export { customRender as render, screen, fireEvent, waitFor };
