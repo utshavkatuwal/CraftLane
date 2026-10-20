@@ -140,6 +140,12 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
       const req = request as AuthenticatedRequest;
       const userId = req.user?.id;
 
+      if (!userId) {
+        return reply
+          .status(401)
+          .send({ error: 'unauthenticated', message: 'Authentication required' });
+      }
+
       const project = await prisma.project.findUnique({
         where: { id: projectId },
         select: {
@@ -198,7 +204,6 @@ export default async function proposalRoutes(fastify: FastifyInstance) {
         proposed_price: proposal.proposed_price_cents ? proposal.proposed_price_cents / 100 : null,
         proposed_timeline: proposal.proposed_timeline,
         status: proposal.status,
-        freelancer: proposal.freelancer,
         created_at: proposal.created_at,
       });
     }

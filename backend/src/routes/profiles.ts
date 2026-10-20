@@ -207,7 +207,9 @@ export default async function profileRoutes(fastify: FastifyInstance) {
 
       if (!profile) {
         if (!userId) {
-          return reply.status(401).send({ error: 'unauthenticated', message: 'Authentication required' });
+          return reply
+            .status(401)
+            .send({ error: 'unauthenticated', message: 'Authentication required' });
         }
         profile = await prisma.freelancerProfile.create({
           data: { user_id: userId },

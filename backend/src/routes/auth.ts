@@ -81,7 +81,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
     const req = request as AuthenticatedRequest;
     const userId = req.user?.id;
     if (!userId) {
-      return reply.status(401).send({ error: 'unauthenticated', message: 'Authentication required' });
+      return reply
+        .status(401)
+        .send({ error: 'unauthenticated', message: 'Authentication required' });
     }
     const result = await getMeService(userId);
     return reply.status(200).send(result);

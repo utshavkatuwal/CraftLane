@@ -53,7 +53,7 @@ export const VerifyEmailSchema = z.object({
 export async function signup(data: z.infer<typeof SignupSchema>) {
   const existing = await findUserByEmail(data.email);
   if (existing) {
-    const err = new Error('Email already registered');
+    const err = new Error('Email already registered') as Error & { statusCode?: number };
     err.statusCode = 409;
     throw err;
   }
@@ -103,7 +103,7 @@ export async function signup(data: z.infer<typeof SignupSchema>) {
 export async function signin(data: z.infer<typeof SigninSchema>) {
   const user = await findUserByEmail(data.email);
   if (!user) {
-    const err = new Error('Invalid email or password');
+    const err = new Error('Invalid email or password') as Error & { statusCode?: number };
     err.statusCode = 401;
     throw err;
   }
@@ -111,13 +111,13 @@ export async function signin(data: z.infer<typeof SigninSchema>) {
   const { verify } = await import('argon2');
   const valid = await verify(user.password_hash, data.password);
   if (!valid) {
-    const err = new Error('Invalid email or password');
+    const err = new Error('Invalid email or password') as Error & { statusCode?: number };
     err.statusCode = 401;
     throw err;
   }
 
   if (user.status === 'SUSPENDED' || user.status === 'DEACTIVATED') {
-    const err = new Error('Account is not active');
+    const err = new Error('Account is not active') as Error & { statusCode?: number };
     err.statusCode = 403;
     throw err;
   }
@@ -163,7 +163,7 @@ export async function signout(sessionId: string) {
 export async function getMe(userId: string) {
   const user = await findUserById(userId);
   if (!user) {
-    const err = new Error('User not found');
+    const err = new Error('User not found') as Error & { statusCode?: number };
     err.statusCode = 404;
     throw err;
   }
@@ -223,14 +223,14 @@ export async function resetPassword(data: z.infer<typeof ResetPasswordSchema>) {
   });
 
   if (!tokenRecord || !(await verify(tokenRecord.token_hash, data.token))) {
-    const err = new Error('Invalid or expired reset token');
+    const err = new Error('Invalid or expired reset token') as Error & { statusCode?: number };
     err.statusCode = 400;
     throw err;
   }
 
   const user = await findUserById(tokenRecord.user_id);
   if (!user) {
-    const err = new Error('User not found');
+    const err = new Error('User not found') as Error & { statusCode?: number };
     err.statusCode = 404;
     throw err;
   }
@@ -264,7 +264,9 @@ export async function verifyEmail(data: z.infer<typeof VerifyEmailSchema>) {
   });
 
   if (!tokenRecord || !(await verify(tokenRecord.token_hash, data.token))) {
-    const err = new Error('Invalid or expired verification token');
+    const err = new Error('Invalid or expired verification token') as Error & {
+      statusCode?: number;
+    };
     err.statusCode = 400;
     throw err;
   }
