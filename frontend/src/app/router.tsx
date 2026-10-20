@@ -29,6 +29,9 @@ const BrowsePage = lazy(() =>
 const ProjectDetailPage = lazy(() =>
   import('@/features/projects/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage }))
 );
+const ProjectCreatePage = lazy(() =>
+  import('@/features/projects/ProjectCreatePage').then((m) => ({ default: m.ProjectCreatePage }))
+);
 const FreelancerProfilePage = lazy(() =>
   import('@/features/profiles/FreelancerProfilePage').then((m) => ({
     default: m.FreelancerProfilePage,
@@ -53,6 +56,7 @@ export const routes: RouteObject[] = [
   { path: '/sign-in', element: <SignInPage /> },
   { path: '/work', element: <BrowsePage /> },
   { path: '/work/:projectId', element: <ProjectDetailPage /> },
+  { path: '/work/post', element: <ProjectCreatePage /> },
   { path: '/freelancers/:id', element: <FreelancerProfilePage /> },
   { path: '/dashboard/client', element: <ClientDashboardPage /> },
   { path: '/dashboard/freelancer', element: <FreelancerDashboardPage /> },

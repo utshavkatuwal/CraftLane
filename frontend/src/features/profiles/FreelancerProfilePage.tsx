@@ -4,7 +4,7 @@
  * experience are shown honestly — never fabricated.
  */
 
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';

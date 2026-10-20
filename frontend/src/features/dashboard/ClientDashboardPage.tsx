@@ -12,16 +12,12 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Loader } from '@/components/ui/Loader';
 import { ErrorMessage } from '@/components/ui/ErrorMessage';
 import { Link } from '@/components/ui/Link';
-import { fetchMyProfile, updateFreelancerProfile } from '@/features/profiles/profile.service';
 import { fetchProjects } from '@/features/marketplace/marketplace.service';
-import { fetchProposals } from '@/features/marketplace/proposal.service';
 import styles from './ClientDashboardPage.module.css';
 
 export function ClientDashboardPage() {
   const [activeTab, setActiveTab] = useState<'projects' | 'proposals'>('projects');
-  const [profile, setProfile] = useState<any>(null);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [proposals, setProposals] = useState<any[]>([]);
+  const [projects, setProjects] = useState<{ id: string; title: string; description: string; status: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,14 +26,9 @@ export function ClientDashboardPage() {
 
     async function loadData() {
       try {
-        // Load profile and projects in parallel
-        const [profileData, projectsData] = await Promise.all([
-          fetchMyProfile(),
-          fetchProjects({ status: 'published', page_size: 20 }),
-        ]);
+        const projectsData = await fetchProjects({ status: 'published', page_size: 20 });
 
         if (!cancelled) {
-          setProfile(profileData);
           setProjects(projectsData.projects || []);
         }
       } catch (err) {
@@ -116,7 +107,7 @@ export function ClientDashboardPage() {
                 </div>
                 {projects.length > 0 ? (
                   <div className={styles.projectList}>
-                    {projects.map((project: any) => (
+                    {projects.map((project) => (
                       <div key={project.id} className={styles.projectCard}>
                         <div className={styles.projectCardInfo}>
                           <h4 className={styles.projectCardTitle}>{project.title}</h4>
@@ -157,33 +148,15 @@ export function ClientDashboardPage() {
               <section className={styles.section}>
                 <div className={styles.sectionHeader}>
                   <h3 className={styles.sectionTitle}>Incoming proposals</h3>
-                  <Badge variant="muted">{proposals.length} proposals</Badge>
+                  <Badge variant="muted">0 proposals</Badge>
                 </div>
-                {proposals.length > 0 ? (
-                  <div className={styles.proposalList}>
-                    {proposals.map((proposal: any) => (
-                      <div key={proposal.id} className={styles.proposalCard}>
-                        <div className={styles.proposalCardInfo}>
-                          <h4 className={styles.proposalCardTitle}>
-                            {proposal.cover_message?.slice(0, 50)}...
-                          </h4>
-                          <span className={styles.proposalCardStatus}>{proposal.status}</span>
-                        </div>
-                        <div className={styles.proposalCardPrice}>
-                          {proposal.proposed_price !== null ? `$${proposal.proposed_price}` : '—'}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState
-                    title="No proposals"
-                    description={
-                      'Proposals from freelancers will appear here once you ' +
-                      'publish a project.'
-                    }
-                  />
-                )}
+                <EmptyState
+                  title="No proposals"
+                  description={
+                    'Proposals from freelancers will appear here once you ' +
+                    'publish a project.'
+                  }
+                />
                 <p className={styles.note}>
                   Proposal details, proposed prices, and timelines appear here.
                 </p>
