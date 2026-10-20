@@ -223,6 +223,10 @@ export default async function projectRoutes(fastify: FastifyInstance) {
       const userId = req.user?.id;
       const body = request.body as z.infer<typeof ProjectCreateSchema>;
 
+      if (!userId) {
+        return reply.status(401).send({ error: 'unauthenticated', message: 'Authentication required' });
+      }
+
       // Get or create client profile
       let clientProfile = await prisma.clientProfile.findUnique({
         where: { user_id: userId },
