@@ -52,6 +52,8 @@ const ProjectUpdateSchema = z.object({
   skills: z.array(z.string()).optional(),
 });
 
+export { ProjectQuerySchema, ProjectCreateSchema };
+
 const ProjectIdSchema = z.object({
   id: z.string().uuid(),
 });
