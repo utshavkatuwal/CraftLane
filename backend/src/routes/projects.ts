@@ -66,7 +66,9 @@ export default async function projectRoutes(fastify: FastifyInstance) {
   /* List projects */
   fastify.get(
     '/',
-    validationMiddleware({ query: ProjectQuerySchema }),
+    {
+      preHandler: [validationMiddleware({ query: ProjectQuerySchema })],
+    },
     async (request, reply) => {
       const q = request.query as z.infer<typeof ProjectQuerySchema>
       const skip = (q.page - 1) * q.page_size
@@ -128,7 +130,9 @@ export default async function projectRoutes(fastify: FastifyInstance) {
           budget_min: p.budget_min_cents
             ? p.budget_min_cents / 100
             : null,
-          budget_max: p.budget_max_cents ? p.budget_max_cents / 100 : null,
+          budget_max: p.budget_max_cents
+            ? p.budget_max_cents / 100
+            : null,
           currency: p.currency,
           deadline: p.deadline,
           skills: p.skills.map((ps) => ps.skill.name),
@@ -149,7 +153,9 @@ export default async function projectRoutes(fastify: FastifyInstance) {
   /* Get a single project */
   fastify.get(
     '/:id',
-    validationMiddleware({ params: ProjectIdSchema }),
+    {
+      preHandler: [validationMiddleware({ params: ProjectIdSchema })],
+    },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProjectIdSchema>
 
@@ -215,8 +221,13 @@ export default async function projectRoutes(fastify: FastifyInstance) {
   /* Create a project (client only) */
   fastify.post(
     '/',
-    { preHandler: [authenticate, authorize(['CLIENT', 'ADMIN'])] },
-    validationMiddleware({ body: ProjectCreateSchema }),
+    {
+      preHandler: [
+        authenticate,
+        authorize(['CLIENT', 'ADMIN']),
+        validationMiddleware({ body: ProjectCreateSchema }),
+      ],
+    },
     async (request, reply) => {
       const body = request.body as z.infer<typeof ProjectCreateSchema>
       const userId = (request as any).user?.id
@@ -316,7 +327,9 @@ export default async function projectRoutes(fastify: FastifyInstance) {
   fastify.patch(
     '/:id',
     { preHandler: [authenticate] },
-    validationMiddleware({ params: ProjectIdSchema, body: ProjectUpdateSchema }),
+    {
+      preHandler: [validationMiddleware({ params: ProjectIdSchema, body: ProjectUpdateSchema })],
+    },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProjectIdSchema>
       const body = request.body as z.infer<typeof ProjectUpdateSchema>
@@ -376,7 +389,9 @@ export default async function projectRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/:id/close',
     { preHandler: [authenticate] },
-    validationMiddleware({ params: ProjectIdSchema }),
+    {
+      preHandler: [validationMiddleware({ params: ProjectIdSchema })],
+    },
     async (request, reply) => {
       const { id } = request.params as z.infer<typeof ProjectIdSchema>
       const userId = (request as any).user?.id
