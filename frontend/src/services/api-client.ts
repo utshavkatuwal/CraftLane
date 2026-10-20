@@ -6,6 +6,11 @@
  *
  * The base URL comes from Vite environment (VITE_API_BASE_URL). Vite embeds
  * VITE_* variables at build time, so no secrets belong here.
+ *
+ * Session tokens are set via setAuthToken() and are sent as an
+ * Authorization: Bearer header on every request. Tokens are held in memory
+ * only — never in localStorage or sessionStorage — so a page refresh clears
+ * the session and the user must sign in again.
  */
 
 import type { ApiError } from '@/types';
@@ -19,12 +24,31 @@ const getBaseUrl = (): string => {
   return '/api';
 };
 
+/* Session token held in memory only. */
+let authToken: string | null = null;
+
+/* Set the session token used for Authorization headers. Call this after a
+ * successful sign in, and null it out on sign out. */
+export function setAuthToken(token: string | null): void {
+  authToken = token;
+}
+
+/* Get the current session token (if any). */
+export function getAuthToken(): string | null {
+  return authToken;
+}
+
 export class ApiErrorResponse extends Error {
   public readonly status: number;
   public readonly code: string | undefined;
   public readonly details: Record<string, string[]> | undefined;
 
-  constructor(message: string, status: number, code?: string, details?: Record<string, string[]>) {
+  constructor(
+    message: string,
+    status: number,
+    code?: string,
+    details?: Record<string, string[]>,
+  ) {
     super(message);
     this.name = 'ApiErrorResponse';
     this.status = status;
@@ -70,7 +94,10 @@ async function parseErrorResponse(response: Response): Promise<ApiError> {
 
 /* Typed JSON request. Throws ApiErrorResponse on non-ok responses so
  * callers decide how to surface failures (error UI, empty state, etc.). */
-export async function apiRequest<T>(path: string, init: RequestInitExtend = {}): Promise<T> {
+export async function apiRequest<T>(
+  path: string,
+  init: RequestInitExtend = {},
+): Promise<T> {
   const baseUrl = getBaseUrl();
   const url = path.startsWith('http') ? path : `${baseUrl}${path}`;
 
@@ -81,6 +108,11 @@ export async function apiRequest<T>(path: string, init: RequestInitExtend = {}):
       : {}),
     ...(init.headers as Record<string, string> | undefined),
   };
+
+  // Attach the session token if one is set.
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
 
   const body = init.body !== undefined ? JSON.stringify(init.body) : undefined;
 
@@ -126,5 +158,5 @@ export const api = {
     apiRequest<T>(path, { ...init, method: 'DELETE' }),
 };
 
-export { getBaseUrl };
+export { getBaseUrl, setAuthToken, getAuthToken };
 export type { RequestInitExtend };
