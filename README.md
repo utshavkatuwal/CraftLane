@@ -29,7 +29,7 @@ users, reviews, ratings, projects, earnings, or activity metrics.
 
 - React 19, TypeScript (strict), Vite 6
 - React Router 7 (client-side routing)
-- CSS Modules + global design tokens
+- CSS Modules + global design tokens; Tailwind CSS
 - Lucide React (icons)
 - React Hook Form + Zod (form validation)
 - Vitest + React Testing Library (testing)
