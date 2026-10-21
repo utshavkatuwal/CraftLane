@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 // Craftlane — Prisma client singleton
 // Prevents multiple client instances in development with hot-reloading.
-
+//Streak
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
